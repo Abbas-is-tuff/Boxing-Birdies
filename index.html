@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Boxing Birdies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+</script>
+</head>
+<body>
+<div id="game"></div>
+
+<!-- World HUD -->
+<div id="hud" class="hidden">
+  <div class="card stats-card">
+    <div class="row"><span id="hudName" class="hud-name">Birdie</span><span id="hudRank" class="pill">Unranked</span></div>
+    <div class="row small"><span id="hudDay">Day 1</span><span id="hudTime">08:00</span></div>
+    <div class="row small"><span>💰 <b id="hudMoney">$0</b></span><span>⭐ <b id="hudFame">0</b></span></div>
+    <div class="bar-label small">Energy</div>
+    <div class="bar"><div id="hudEnergy" class="fill energy"></div></div>
+    <div class="row tiny"><span id="hudRecord">0-0 (0 KO)</span><span id="hudFeathers">🪶 0/20</span></div>
+  </div>
+  <canvas id="minimap" width="170" height="170"></canvas>
+  <div id="prompt" class="prompt hidden"></div>
+  <div id="hint" class="hint">WASD move · Shift run · Space jump/flap/glide · Drag to look · E interact · C career · H help</div>
+</div>
+
+<!-- Fight HUD -->
+<div id="fightHud" class="hidden">
+  <div class="fh-side left">
+    <div class="fh-name" id="fhPName">You</div>
+    <div class="bar big"><div id="fhPHp" class="fill hp"></div></div>
+    <div class="bar thin"><div id="fhPSt" class="fill st"></div></div>
+    <div class="kd" id="fhPKd"></div>
+  </div>
+  <div class="fh-mid"><div id="fhRound">R1</div><div id="fhTime">1:00</div></div>
+  <div class="fh-side right">
+    <div class="fh-name" id="fhOName">Opponent</div>
+    <div class="bar big"><div id="fhOHp" class="fill hp"></div></div>
+    <div class="bar thin"><div id="fhOSt" class="fill st"></div></div>
+    <div class="kd" id="fhOKd"></div>
+  </div>
+  <div id="fhHint" class="hint">WASD move · J jab · K hook · L uppercut · Shift block · Space dodge</div>
+  <div id="getUp" class="getup hidden"><div>MASH J / K / L TO GET UP!</div><div class="bar"><div id="getUpFill" class="fill st"></div></div></div>
+</div>
+
+<div id="announce" class="announce"></div>
+<div id="toasts"></div>
+
+<!-- Training overlay -->
+<div id="training" class="hidden">
+  <div class="tr-title" id="trTitle">Heavy Bag</div>
+  <div class="tr-sub" id="trSub">Hit the keys as they cross the line</div>
+  <div class="lane" id="lane"><div class="hitline"></div></div>
+  <div class="tr-score"><span id="trJudge"></span><span id="trCombo"></span></div>
+</div>
+
+<!-- Modal panel -->
+<div id="modal" class="hidden">
+  <div class="panel">
+    <h2 id="modalTitle"></h2>
+    <div id="modalBody"></div>
+    <div id="modalButtons" class="buttons"></div>
+  </div>
+</div>
+
+<!-- Title -->
+<div id="title">
+  <div class="title-inner">
+    <h1>BOXING<br><span>BIRDIES</span></h1>
+    <p class="tag">An open-world feathered fighting career. From backyard brawler to Undisputed Champion of Featherton.</p>
+    <div id="titleMenu"></div>
+  </div>
+</div>
+
+<!-- Touch controls -->
+<div id="touch" class="hidden">
+  <div id="joy"><div id="joyKnob"></div></div>
+  <div id="tbtns">
+    <button data-code="KeyJ">J<small>jab</small></button>
+    <button data-code="KeyK">K<small>hook</small></button>
+    <button data-code="KeyL">L<small>upper</small></button>
+    <button data-code="ShiftLeft">⛨<small>block/run</small></button>
+    <button data-code="Space">⤒<small>jump/dodge</small></button>
+    <button data-code="KeyE">E<small>use</small></button>
+    <button data-code="KeyC" class="mini">C</button>
+  </div>
+</div>
+
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
