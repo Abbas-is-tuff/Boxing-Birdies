@@ -1,6 +1,6 @@
 # 🥊 Boxing Birdies
 
-A 3D open-world boxing career game starring birds, built with [Three.js](https://threejs.org/). Pick one of three real birds, Pepper, Sunny or Rosie, and fight your way from unranked to Undisputed Featherweight Champion of **Featherton**.
+A 3D open-world boxing career game starring birds, built with [Three.js](https://threejs.org/). Pick one of three real birds, Lightning, Cookie or Abbas, and fight your way from unranked to Undisputed Featherweight Champion of **Featherton**.
 
 There's no build step and there are no asset files: every bird, texture, building and sound is generated in code.
 
@@ -17,9 +17,9 @@ python3 -m http.server 8000
 
 | Bird | Species | Style |
 |---|---|---|
-| **Pepper** "The Crest" | Grey cockatiel: yellow face and crest, orange cheek patches | Well-rounded |
-| **Sunny** "Lemon Drop" | Lutino cockatiel: creamy yellow, orange cheeks, red eyes | Fast |
-| **Rosie** "The Red Rocket" | Peach-faced lovebird: red head, green body, blue rump | Hard hitter |
+| **Lightning** "The Crest" (boy) | Grey cockatiel: bright yellow face and crest, orange cheek patches | Well-rounded |
+| **Cookie** "Lemon Drop" | Lutino cockatiel: creamy yellow, orange cheeks, red eyes | Fast |
+| **Abbas** "The Red Rocket" (boy) | Peach-faced lovebird: red head, green body, blue rump | Hard hitter |
 
 Pick one to box. The other two are your **corner team**: they live in the yard by your nest, you can **spar** with them for stat gains, and they stand in your corner at every fight, cheering and giving advice between rounds. Rival cockatiels and lovebirds (Pearl and Blaze) are in the rankings too, and wild ones fly around town and sit on the power lines.
 

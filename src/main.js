@@ -428,9 +428,9 @@ function interact(id) {
 }
 
 const TEAM_LINES = {
-  pepper: ['Crest up, chin down!', 'I whistled at a hawk once. It left.', 'Jab, jab, hook. Trust me.'],
-  sunny: ['Speed beats size. Every time!', 'Did somebody say millet?', 'Your footwork is getting sharp!'],
-  rosie: ['Hit them like you mean it!', 'Lovebirds don\'t back down.', 'Small bird, big punch. That\'s us!'],
+  pepper: ['Crest up, chin down!', 'I whistled at a hawk once. It left.', 'They don\'t call me Lightning for nothing.'],
+  sunny: ['Speed beats size. Every time!', 'Did somebody say cookies? Oh, me. Cookie.', 'Your footwork is getting sharp!'],
+  rosie: ['Hit them like you mean it!', 'Lovebirds don\'t back down.', 'Abbas is small, but Abbas hits BIG.'],
 };
 
 function teamDialog(t) {

@@ -81,7 +81,7 @@ const NPC_NAMES = ['Chirpy', 'Beaky Joe', 'Sparrowina', 'Wrenford', 'Tweetsy', '
 const NPC_SPECIES = ['sparrow', 'robin', 'bluejay', 'cardinal', 'goldfinch', 'pigeon', 'budgie', 'macaw', 'cockatielGrey', 'cockatielLutino', 'lovebirdPeach', 'lovebirdLutino', 'gull', 'magpie', 'cockatielPearl'];
 const CHALLENGER_NAMES = ['Scrappy Sparrow', 'Brawlin\' Bluejay', 'Pigeon Pacquito', 'Mad Macaw', 'Knuckles Budgie', 'Cardinal Crusher', 'Gull Gutpunch', 'Magpie Mayhem'];
 const BANTER = ['Nice gloves!', 'Tweet tweet!', 'Saw your last fight!', 'Float like a feather...', '...sting like a beak!', 'Train hard, fly high!', 'Got any millet?', 'Champ in the making!',
-  'The Coop is packed tonight!', 'Coach Gizzard is tough but fair.', 'Find the golden feathers!', 'Hold Space to fly!', 'Pepper\'s crest is legendary.', 'Rosie hits so hard for a lovebird!', 'Sunny is FAST.'];
+  'The Coop is packed tonight!', 'Coach Gizzard is tough but fair.', 'Find the golden feathers!', 'Hold Space to fly!', 'Lightning\'s crest is legendary.', 'Abbas hits so hard for his size!', 'Cookie is FAST.', 'Have you seen Lightning fly?'];
 
 export class World {
   constructor(scene, renderer, quality = 'high') {

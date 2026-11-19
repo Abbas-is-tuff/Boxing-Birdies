@@ -3,15 +3,15 @@ const SAVE_KEY = 'boxing-birdies-save-v2';
 
 // The player's own birds. Pick one to box; the other two work your corner.
 export const MY_BIRDS = [
-  { id: 'pepper', name: 'Pepper', nick: 'The Crest', species: 'cockatielGrey', glove: 0xc0141c, trunks: 0x1e3a8a, trim: 0xfacc15,
+  { id: 'pepper', name: 'Lightning', nick: 'The Crest', pronoun: 'he', species: 'cockatielGrey', glove: 0xc0141c, trunks: 0x1e3a8a, trim: 0xfacc15,
     bonus: { power: 1, speed: 1, stamina: 1, defense: 1 },
-    bio: 'Grey cockatiel. The yellow crest shoots straight up when the bell rings. Well-rounded.' },
-  { id: 'sunny', name: 'Sunny', nick: 'Lemon Drop', species: 'cockatielLutino', glove: 0x1d4ed8, trunks: 0xf97316, trim: 0xffffff,
+    bio: 'Grey cockatiel, and a boy: you can tell by his bright yellow face. His crest shoots straight up when the bell rings. Well-rounded.' },
+  { id: 'sunny', name: 'Cookie', nick: 'Lemon Drop', species: 'cockatielLutino', glove: 0x1d4ed8, trunks: 0xf97316, trim: 0xffffff,
     bonus: { power: 0, speed: 4, stamina: 1, defense: 0 },
     bio: 'Lutino cockatiel: creamy yellow, bright orange cheeks and ruby-red eyes. Fastest wings in Featherton.' },
-  { id: 'rosie', name: 'Rosie', nick: 'The Red Rocket', species: 'lovebirdPeach', glove: 0xfacc15, trunks: 0x0f766e, trim: 0xf43f5e,
+  { id: 'rosie', name: 'Abbas', nick: 'The Red Rocket', pronoun: 'he', species: 'lovebirdPeach', glove: 0xfacc15, trunks: 0x0f766e, trim: 0xf43f5e,
     bonus: { power: 4, speed: 1, stamina: 0, defense: 0 },
-    bio: 'Peach-faced lovebird with a fiery red head. Tiny, fearless and punches way above 52 grams.' },
+    bio: 'Peach-faced lovebird with a fiery red head. He\'s tiny, fearless and punches way above his 52 grams.' },
 ];
 
 export const DIFFICULTY = {
@@ -89,6 +89,7 @@ export class Career {
       const c = new Career(JSON.parse(raw));
       if (!c.sparredToday) c.sparredToday = [];
       if (!DIFFICULTY[c.difficulty]) c.difficulty = 'rookie';
+      c.name = c.bird.name;
       return c;
     } catch (e) { return null; }
   }
