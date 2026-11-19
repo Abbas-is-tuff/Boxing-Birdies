@@ -69,6 +69,38 @@ export const sfx = {
     src.connect(f).connect(gn).connect(master);
     src.start(t); src.stop(t + 2.3);
   },
+  ooh() {
+    const c = ac(); if (!c) return;
+    const t = c.currentTime;
+    const src = c.createBufferSource(); src.buffer = noise;
+    const f = c.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 4;
+    f.frequency.setValueAtTime(380, t); f.frequency.linearRampToValueAtTime(260, t + 0.9);
+    const gn = c.createGain(); env(gn, t, 0.15, 0.5, 0.9);
+    src.connect(f).connect(gn).connect(master);
+    src.start(t); src.stop(t + 1.2);
+  },
+  // Grey/lutino cockatiel wolf-whistle
+  whistle() {
+    tone('sine', 1500, 2600, 0.22, 0.12);
+    tone('sine', 1300, 2200, 0.18, 0.1, 0.3);
+    tone('sine', 2200, 1200, 0.3, 0.1, 0.5);
+  },
+  // Lovebird: sharp, high, rapid chirps
+  lovebird() {
+    for (let i = 0; i < 3; i++) tone('square', 3200 + Math.random() * 600, 4200, 0.04, 0.05, i * 0.07);
+  },
+  crowd(level) {
+    const c = ac(); if (!c) return;
+    if (!this._crowd) {
+      const src = c.createBufferSource(); src.buffer = noise; src.loop = true;
+      const f = c.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 900; f.Q.value = 0.5;
+      const gn = c.createGain(); gn.gain.value = 0;
+      src.connect(f).connect(gn).connect(master);
+      src.start();
+      this._crowd = gn;
+    }
+    this._crowd.gain.setTargetAtTime(level, c.currentTime, 0.3);
+  },
   coin() { tone('square', 988, 988, 0.07, 0.12); tone('square', 1319, 1319, 0.18, 0.12, 0.07); },
   good() { tone('triangle', 660, 990, 0.1, 0.18); },
   bad() { tone('sawtooth', 200, 110, 0.15, 0.12); },

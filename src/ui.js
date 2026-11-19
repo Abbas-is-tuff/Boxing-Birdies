@@ -12,6 +12,7 @@ export class UI {
       getUp: $('getUp'), getUpFill: $('getUpFill'),
       modal: $('modal'), mTitle: $('modalTitle'), mBody: $('modalBody'), mButtons: $('modalButtons'),
       minimap: $('minimap'), title: $('title'), touch: $('touch'),
+      wing: $('wingMeter'), wingFill: $('wingFill'), speech: $('speech'),
     };
     this.mapCtx = this.el.minimap.getContext('2d');
     this.announceTimer = null;
@@ -68,6 +69,19 @@ export class UI {
     document.body.appendChild(d);
     requestAnimationFrame(() => { d.style.top = (parseFloat(d.style.top) - 8) + '%'; d.style.opacity = '0'; });
     setTimeout(() => d.remove(), 800);
+  }
+
+  updateWing(v, show) {
+    this.el.wing.classList.toggle('hidden', !show);
+    if (show) this.el.wingFill.style.width = Math.max(0, Math.min(100, v)) + '%';
+  }
+
+  speech(name, text, sec = 3) {
+    const s = this.el.speech;
+    s.innerHTML = `<b>${name}:</b> ${text}`;
+    s.classList.remove('hidden');
+    clearTimeout(this.speechTimer);
+    this.speechTimer = setTimeout(() => s.classList.add('hidden'), sec * 1000);
   }
 
   // ----- fight HUD -----

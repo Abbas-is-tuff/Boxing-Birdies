@@ -9,7 +9,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script type="importmap">
-{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
 </script>
 </head>
 <body>
@@ -26,8 +29,9 @@
     <div class="row tiny"><span id="hudRecord">0-0 (0 KO)</span><span id="hudFeathers">🪶 0/20</span></div>
   </div>
   <canvas id="minimap" width="170" height="170"></canvas>
+  <div id="wingMeter" class="wing hidden"><span>🪽</span><div class="bar"><div id="wingFill" class="fill wingfill"></div></div></div>
   <div id="prompt" class="prompt hidden"></div>
-  <div id="hint" class="hint">WASD move · Shift run · Space jump/flap/glide · Drag to look · E interact · C career · H help</div>
+  <div id="hint" class="hint">WASD move · Shift run · Space jump, tap again to flap, hold to glide · Drag to look · E interact · C career · H help</div>
 </div>
 
 <!-- Fight HUD -->
@@ -45,11 +49,12 @@
     <div class="bar thin"><div id="fhOSt" class="fill st"></div></div>
     <div class="kd" id="fhOKd"></div>
   </div>
-  <div id="fhHint" class="hint">WASD move · J jab · K hook · L uppercut · Shift block · Space dodge</div>
+  <div id="fhHint" class="hint">WASD move · J jab · K hook · L uppercut · Shift block · Space dodge · V camera</div>
   <div id="getUp" class="getup hidden"><div>MASH J / K / L TO GET UP!</div><div class="bar"><div id="getUpFill" class="fill st"></div></div></div>
 </div>
 
 <div id="announce" class="announce"></div>
+<div id="speech" class="speech hidden"></div>
 <div id="toasts"></div>
 
 <!-- Training overlay -->
@@ -73,7 +78,7 @@
 <div id="title">
   <div class="title-inner">
     <h1>BOXING<br><span>BIRDIES</span></h1>
-    <p class="tag">An open-world feathered fighting career. From backyard brawler to Undisputed Champion of Featherton.</p>
+    <p class="tag">Pepper, Sunny and Rosie are going pro. Pick your fighter, train hard, and take the belt in Featherton.</p>
     <div id="titleMenu"></div>
   </div>
 </div>
@@ -89,6 +94,7 @@
     <button data-code="Space">⤒<small>jump/dodge</small></button>
     <button data-code="KeyE">E<small>use</small></button>
     <button data-code="KeyC" class="mini">C</button>
+    <button data-code="KeyV" class="mini">V<small>cam</small></button>
   </div>
 </div>
 

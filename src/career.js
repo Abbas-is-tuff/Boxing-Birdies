@@ -1,30 +1,41 @@
-// Career state: stats, money, rankings, saving.
-const SAVE_KEY = 'boxing-birdies-save-v1';
+// Career state: your birds, stats, money, rankings, difficulty, saving.
+const SAVE_KEY = 'boxing-birdies-save-v2';
+
+// The player's own birds. Pick one to box; the other two work your corner.
+export const MY_BIRDS = [
+  { id: 'pepper', name: 'Pepper', nick: 'The Crest', species: 'cockatielGrey', glove: 0xc0141c, trunks: 0x1e3a8a, trim: 0xfacc15,
+    bonus: { power: 1, speed: 1, stamina: 1, defense: 1 },
+    bio: 'Grey cockatiel. The yellow crest shoots straight up when the bell rings. Well-rounded.' },
+  { id: 'sunny', name: 'Sunny', nick: 'Lemon Drop', species: 'cockatielLutino', glove: 0x1d4ed8, trunks: 0xf97316, trim: 0xffffff,
+    bonus: { power: 0, speed: 4, stamina: 1, defense: 0 },
+    bio: 'Lutino cockatiel: creamy yellow, bright orange cheeks and ruby-red eyes. Fastest wings in Featherton.' },
+  { id: 'rosie', name: 'Rosie', nick: 'The Red Rocket', species: 'lovebirdPeach', glove: 0xfacc15, trunks: 0x0f766e, trim: 0xf43f5e,
+    bonus: { power: 4, speed: 1, stamina: 0, defense: 0 },
+    bio: 'Peach-faced lovebird with a fiery red head. Tiny, fearless and punches way above 52 grams.' },
+];
+
+export const DIFFICULTY = {
+  rookie: { label: 'Rookie', desc: 'Relaxed. You hit harder and take less damage, rivals are slower, and you see their punches coming.',
+    dealt: 1.45, taken: 0.55, ai: 0.55, aggr: 0.7, mash: 2.2, energy: 0.65, train: 1.6, window: 1.45, tempo: 1.22, start: 18, telegraph: true, flapCost: 6, dailyLimit: false },
+  pro: { label: 'Pro', desc: 'Balanced. A fair fight with a little help reading your rival.',
+    dealt: 1.15, taken: 0.8, ai: 0.8, aggr: 0.88, mash: 1.5, energy: 0.85, train: 1.25, window: 1.2, tempo: 1.1, start: 14, telegraph: true, flapCost: 10, dailyLimit: false },
+  legend: { label: 'Legend', desc: 'The original challenge. No hints, one Coliseum bout per day.',
+    dealt: 1, taken: 1, ai: 1, aggr: 1, mash: 1, energy: 1, train: 1, window: 1, tempo: 1, start: 10, telegraph: false, flapCost: 14, dailyLimit: true },
+};
 
 // Index 0 is the reigning champion; 10 is the lowest-ranked contender.
 export const ROSTER = [
-  { id: 'condor', name: 'King Condor', nick: 'The Undisputed', lvl: 80, style: 'tank', scale: 1.18,
-    look: { body: 0x2b2b2b, belly: 0xf2f2f2, beak: 0xd9b38c, glove: 0xffd23f, trunks: 0x5b2a86, crest: 0xd94848, crestStyle: 'tufts', beakLen: 0.5, beakW: 0.16 } },
-  { id: 'eagle', name: 'Eagle Eddie', nick: 'The Apex', lvl: 71, style: 'balanced', scale: 1.12,
-    look: { body: 0x5a3a1e, belly: 0xffffff, beak: 0xffc21a, glove: 0x1e5bd6, trunks: 0xffffff, crest: 0xffffff, crestStyle: 'none', beakLen: 0.38, beakW: 0.15 } },
-  { id: 'raven', name: 'Raven Rampage', nick: 'Nevermore', lvl: 63, style: 'brawler', scale: 1.05,
-    look: { body: 0x15151f, belly: 0x2a2a3a, beak: 0x333333, glove: 0x8a0f0f, trunks: 0x8a0f0f, crest: 0x15151f, crestStyle: 'spike' } },
-  { id: 'flamingo', name: 'Flamingo Fury', nick: 'Pink Lightning', lvl: 56, style: 'speedster', scale: 1.08,
-    look: { body: 0xff6fa5, belly: 0xffc2d8, beak: 0x222222, glove: 0x10c0b0, trunks: 0x10c0b0, crest: 0xff6fa5, crestStyle: 'none', legs: 0xff6fa5, beakLen: 0.36 } },
-  { id: 'owl', name: 'Owlbert Einstrike', nick: 'The Professor', lvl: 49, style: 'tank', scale: 1,
-    look: { body: 0x8b6b4a, belly: 0xe8d6b0, beak: 0xc9a227, glove: 0x2e7d32, trunks: 0x2e7d32, crest: 0x8b6b4a, crestStyle: 'tufts', beakLen: 0.2 } },
-  { id: 'hawk', name: 'Hawk Talonson', nick: 'The Talon', lvl: 43, style: 'speedster', scale: 1,
-    look: { body: 0xa0522d, belly: 0xf5deb3, beak: 0x333333, glove: 0xff8800, trunks: 0x000000, crest: 0xa0522d, crestStyle: 'spike', beakLen: 0.3 } },
-  { id: 'toucan', name: 'Toucan Tommy', nick: 'Big Beak', lvl: 37, style: 'brawler', scale: 1,
-    look: { body: 0x111111, belly: 0xffe066, beak: 0xff7b00, glove: 0x00a3ff, trunks: 0x00a3ff, crest: 0x111111, crestStyle: 'none', beakLen: 0.85, beakW: 0.2 } },
-  { id: 'gull', name: 'Gull Gutpunch', nick: 'Boardwalk Bully', lvl: 31, style: 'balanced', scale: 1,
-    look: { body: 0xf0f0f0, belly: 0xffffff, beak: 0xffd000, glove: 0x444444, trunks: 0x3b6ea5, crest: 0xbfc8d0, crestStyle: 'none' } },
-  { id: 'pelican', name: 'Pelican Pete', nick: 'The Pouch', lvl: 25, style: 'tank', scale: 1.1,
-    look: { body: 0xd8d2c4, belly: 0xf7f3ea, beak: 0xf2a65a, glove: 0xb22222, trunks: 0x556b2f, crest: 0xd8d2c4, crestStyle: 'tufts', beakLen: 0.9, beakW: 0.17 } },
-  { id: 'crow', name: 'Crusher Crow', nick: 'Junkyard', lvl: 19, style: 'brawler', scale: 1,
-    look: { body: 0x2f2f3a, belly: 0x45455a, beak: 0x222222, glove: 0x9e9e9e, trunks: 0x7a5c2e, crest: 0x2f2f3a, crestStyle: 'spike' } },
-  { id: 'robin', name: 'Rocky Robin', nick: 'The Early Bird', lvl: 13, style: 'balanced', scale: 0.95,
-    look: { body: 0x6b5040, belly: 0xe2582b, beak: 0xf0c419, glove: 0xe0e0e0, trunks: 0x1f6feb, crest: 0x6b5040, crestStyle: 'none', beakLen: 0.3 } },
+  { id: 'condor', name: 'King Condor', nick: 'The Undisputed', lvl: 80, style: 'tank', species: 'condor', glove: 0xd4af37, trunks: 0x5b2a86, trim: 0xd4af37, scale: 1.15 },
+  { id: 'eagle', name: 'Eagle Eddie', nick: 'The Apex', lvl: 71, style: 'balanced', species: 'eagle', glove: 0x1e40af, trunks: 0xf5f5f5, trim: 0xb91c1c, scale: 1.1 },
+  { id: 'raven', name: 'Raven Rampage', nick: 'Nevermore', lvl: 63, style: 'brawler', species: 'raven', glove: 0x7f1d1d, trunks: 0x18181b, trim: 0x991b1b, scale: 1.05 },
+  { id: 'flamingo', name: 'Flamingo Fury', nick: 'Pink Lightning', lvl: 56, style: 'speedster', species: 'flamingo', glove: 0x0d9488, trunks: 0x0d9488, trim: 0xffffff, scale: 1.08 },
+  { id: 'owl', name: 'Owlbert Einstrike', nick: 'The Professor', lvl: 49, style: 'tank', species: 'owl', glove: 0x166534, trunks: 0x166534, trim: 0xfacc15, scale: 1 },
+  { id: 'hawk', name: 'Hawk Talonson', nick: 'The Talon', lvl: 43, style: 'speedster', species: 'hawk', glove: 0xea580c, trunks: 0x18181b, trim: 0xea580c, scale: 1 },
+  { id: 'toucan', name: 'Toucan Tommy', nick: 'Big Beak', lvl: 37, style: 'brawler', species: 'toucan', glove: 0x0284c7, trunks: 0x0284c7, trim: 0xfacc15, scale: 1 },
+  { id: 'pearl', name: 'Pearl', nick: 'The Whistler', lvl: 31, style: 'speedster', species: 'cockatielPearl', glove: 0xf472b6, trunks: 0x4c1d95, trim: 0xf472b6, scale: 1 },
+  { id: 'pelican', name: 'Pelican Pete', nick: 'The Pouch', lvl: 25, style: 'tank', species: 'pelican', glove: 0xb91c1c, trunks: 0x3f6212, trim: 0xffffff, scale: 1.08 },
+  { id: 'blaze', name: 'Blaze', nick: 'Lovebug', lvl: 19, style: 'brawler', species: 'lovebirdLutino', glove: 0x7c3aed, trunks: 0x111827, trim: 0xf59e0b, scale: 0.97 },
+  { id: 'robin', name: 'Rocky Robin', nick: 'The Early Bird', lvl: 13, style: 'balanced', species: 'robin', glove: 0xe5e7eb, trunks: 0x1d4ed8, trim: 0xe5e7eb, scale: 0.95 },
 ];
 
 const STYLE_MOD = {
@@ -44,27 +55,30 @@ export function statsFor(lvl, style = 'balanced') {
 }
 
 export const SHOP_ITEMS = [
-  { id: 'seeds', name: 'Sunflower Seeds', desc: '+25 energy', price: 12, energy: 25 },
-  { id: 'worms', name: 'Worm Smoothie', desc: '+55 energy', price: 30, energy: 55 },
-  { id: 'nectar', name: 'Hummingbird Nectar', desc: '+100 energy', price: 60, energy: 100 },
-  { id: 'gloves', name: 'Golden Gloves', desc: '+6 Power (permanent)', price: 450, gear: true, stat: 'power', amount: 6 },
-  { id: 'shoes', name: 'Feather-Light Boots', desc: '+6 Speed (permanent)', price: 400, gear: true, stat: 'speed', amount: 6 },
-  { id: 'guard', name: 'Iron Beak Guard', desc: '+6 Defense (permanent)', price: 420, gear: true, stat: 'defense', amount: 6 },
-  { id: 'lungs', name: 'Altitude Mask', desc: '+6 Stamina (permanent)', price: 380, gear: true, stat: 'stamina', amount: 6 },
+  { id: 'seeds', name: 'Sunflower Seeds', desc: '+30 energy', price: 10, energy: 30 },
+  { id: 'millet', name: 'Millet Spray', desc: '+55 energy · a cockatiel favourite', price: 22, energy: 55 },
+  { id: 'nectar', name: 'Fruit & Nectar Bowl', desc: 'Full energy', price: 45, energy: 100 },
+  { id: 'gloves', name: 'Pro Leather Gloves', desc: '+6 Power (permanent)', price: 380, gear: true, stat: 'power', amount: 6 },
+  { id: 'shoes', name: 'Grip Perch Boots', desc: '+6 Speed (permanent)', price: 340, gear: true, stat: 'speed', amount: 6 },
+  { id: 'guard', name: 'Beak Guard', desc: '+6 Defense (permanent)', price: 360, gear: true, stat: 'defense', amount: 6 },
+  { id: 'lungs', name: 'Cuttlebone Supplements', desc: '+6 Stamina (permanent)', price: 320, gear: true, stat: 'stamina', amount: 6 },
 ];
 
 export class Career {
   constructor(data) { Object.assign(this, data); }
 
-  static create(name, palette) {
+  static create(birdId, difficulty = 'rookie') {
+    const b = MY_BIRDS.find((x) => x.id === birdId) || MY_BIRDS[0];
+    const D = DIFFICULTY[difficulty] || DIFFICULTY.rookie;
+    const stats = {};
+    for (const k of ['power', 'speed', 'stamina', 'defense']) stats[k] = D.start + (b.bonus[k] || 0);
     return new Career({
-      name: name || 'Birdie', palette,
-      day: 1, time: 8 * 60, energy: 100, money: 120, fame: 0,
-      stats: { power: 10, speed: 10, stamina: 10, defense: 10 },
-      record: { w: 0, l: 0, ko: 0 },
+      name: b.name, birdId: b.id, difficulty,
+      day: 1, time: 8 * 60, energy: 100, money: 150, fame: 0,
+      stats, record: { w: 0, l: 0, ko: 0 },
       playerRank: 11, rosterOrder: ROSTER.map((_, i) => i),
       feathers: [], gear: [], streetBeaten: [], titleDefenses: 0, champion: false,
-      foughtArenaToday: false,
+      foughtArenaToday: false, sparredToday: [],
     });
   }
 
@@ -72,12 +86,11 @@ export class Career {
     try {
       const raw = localStorage.getItem(SAVE_KEY);
       if (!raw) return null;
-      return new Career(JSON.parse(raw));
+      const c = new Career(JSON.parse(raw));
+      if (!c.sparredToday) c.sparredToday = [];
+      if (!DIFFICULTY[c.difficulty]) c.difficulty = 'rookie';
+      return c;
     } catch (e) { return null; }
-  }
-
-  static hasSave() {
-    try { return !!localStorage.getItem(SAVE_KEY); } catch (e) { return false; }
   }
 
   save() {
@@ -85,6 +98,10 @@ export class Career {
   }
 
   static wipe() { try { localStorage.removeItem(SAVE_KEY); } catch (e) { /* ignore */ } }
+
+  get D() { return DIFFICULTY[this.difficulty] || DIFFICULTY.rookie; }
+  get bird() { return MY_BIRDS.find((b) => b.id === this.birdId) || MY_BIRDS[0]; }
+  get team() { return MY_BIRDS.filter((b) => b.id !== this.birdId); }
 
   get avg() { const s = this.stats; return (s.power + s.speed + s.stamina + s.defense) / 4; }
 
@@ -99,7 +116,6 @@ export class Career {
     return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
   }
 
-  // Full ranking table with the player inserted.
   rankings() {
     const list = this.rosterOrder.map((i) => ({ ...ROSTER[i], idx: i, me: false }));
     list.splice(Math.min(this.playerRank, list.length), 0, { name: this.name, nick: 'That\'s you!', me: true });
@@ -109,7 +125,6 @@ export class Career {
   nextOpponent() {
     let idx, boost = 0;
     if (this.playerRank === 0) {
-      // Title defense: one of the top three contenders, getting tougher each time.
       idx = this.rosterOrder[Math.floor(Math.random() * 3)];
       boost = 4 + this.titleDefenses * 3;
     } else {
@@ -118,19 +133,26 @@ export class Career {
     const base = ROSTER[idx];
     const lvl = Math.min(99, base.lvl + boost);
     return {
-      idx, name: base.name, nick: base.nick, look: base.look, scale: base.scale || 1,
-      lvl, stats: statsFor(lvl, base.style), skill: clamp(0.18 + lvl / 105, 0.2, 0.95), style: base.style,
+      idx, name: base.name, nick: base.nick, species: base.species, glove: base.glove, trunks: base.trunks, trim: base.trim, scale: base.scale || 1,
+      lvl, stats: statsFor(lvl, base.style), skill: clamp(0.18 + lvl / 105, 0.2, 0.95) * this.D.ai, style: base.style,
       title: this.playerRank <= 1,
     };
+  }
+
+  // One of your own birds as a friendly sparring partner, pitched near your level.
+  sparPartner(b) {
+    const lvl = Math.max(6, Math.round(this.avg - (this.difficulty === 'rookie' ? 3 : 0)));
+    const style = b.bonus.speed > 2 ? 'speedster' : b.bonus.power > 2 ? 'brawler' : 'balanced';
+    return { name: b.name, nick: b.nick, species: b.species, glove: b.glove, trunks: b.trunks, trim: b.trim, scale: b.species.startsWith('lovebird') ? 0.95 : 1,
+      lvl, stats: statsFor(lvl, style), skill: clamp(0.15 + lvl / 110, 0.15, 0.85) * this.D.ai, style, spar: true };
   }
 
   purse() {
     if (this.playerRank === 0) return 2500 + this.titleDefenses * 500;
     if (this.playerRank === 1) return 2000;
-    return 90 + (11 - this.playerRank) * 75;
+    return 110 + (11 - this.playerRank) * 85;
   }
 
-  // Called after an arena win: player climbs one spot.
   climb() {
     if (this.playerRank > 0) {
       this.playerRank -= 1;

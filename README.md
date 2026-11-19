@@ -1,29 +1,41 @@
 # 🥊 Boxing Birdies
 
-A 3D open-world boxing career game starring birds. Start as an unranked backyard brawler in the town of **Featherton**, train at the gym, take street fights, and climb the rankings at **The Coop Coliseum** until you're the Undisputed Featherweight Champion.
+A 3D open-world boxing career game starring birds, built with [Three.js](https://threejs.org/). Pick one of three real birds, Pepper, Sunny or Rosie, and fight your way from unranked to Undisputed Featherweight Champion of **Featherton**.
 
-Built with [Three.js](https://threejs.org/) — no build step, no assets to download. Every bird, building and sound is generated in code.
+There's no build step and there are no asset files: every bird, texture, building and sound is generated in code.
 
 ## Play
 
-Serve the folder with any static web server and open it in a browser (ES modules don't load from `file://`):
+Serve the folder with any static web server (ES modules don't load from `file://`):
 
 ```bash
 python3 -m http.server 8000
-# then open http://localhost:8000
+# open http://localhost:8000   (add ?q=low for the faster graphics mode)
 ```
 
-## What's in it
+## Your birds
 
-- **Open world** — a town with roads, houses, a plaza with a golden champion statue, Puddle Park with swimming ducks, a platforming tower, day/night cycle, drifting clouds and flocks of birds overhead. Pigeons scatter when you run at them.
-- **Bird movement** — run, jump, then flap up to 4 times in mid-air and hold Space to glide onto rooftops.
-- **Career** — energy, money, fame, a calendar, and four stats: Power, Speed, Stamina, Defense. Sleep in your nest to start a new day (sponsor money arrives each morning based on fame). Progress saves to the browser.
-- **Training** — four rhythm mini-games at Feather Fists Gym: Heavy Bag (Power), Speed Bag (Speed), Jump Rope (Stamina), Dodge Drill (Defense).
-- **Boxing** — real-time 3D fights with jabs, hooks, uppercuts, blocking, dodging, stamina, counters, guard breaks, knockdowns (mash to get up), KO/TKO and judges' decisions. Feathers fly on every clean hit.
-- **Rankings** — ten ranked contenders (Rocky Robin, Crusher Crow, Pelican Pete, Gull Gutpunch, Toucan Tommy, Hawk Talonson, Owlbert Einstrike, Flamingo Fury, Raven Rampage, Eagle Eddie) and the champion, King Condor. Win the title, then defend it.
-- **Street fights** — townsbirds with a **!** challenge you for cash.
-- **Shop** — food for energy and permanent gear upgrades.
-- **Collectibles** — 20 golden feathers hidden around town, some on rooftops and the Lookout Perch.
+| Bird | Species | Style |
+|---|---|---|
+| **Pepper** "The Crest" | Grey cockatiel: yellow face and crest, orange cheek patches | Well-rounded |
+| **Sunny** "Lemon Drop" | Lutino cockatiel: creamy yellow, orange cheeks, red eyes | Fast |
+| **Rosie** "The Red Rocket" | Peach-faced lovebird: red head, green body, blue rump | Hard hitter |
+
+Pick one to box. The other two are your **corner team**: they live in the yard by your nest, you can **spar** with them for stat gains, and they stand in your corner at every fight, cheering and giving advice between rounds. Rival cockatiels and lovebirds (Pearl and Blaze) are in the rankings too, and wild ones fly around town and sit on the power lines.
+
+## Difficulty
+
+Chosen at the start and changeable any time under **C → Settings**:
+
+- **Rookie** (default): you hit harder and take less damage, rivals react slower, their gloves glow red before a punch, training timing is forgiving, and flying costs less.
+- **Pro**: a fair fight with the punch tells still on.
+- **Legend**: the original challenge, with no hints and one Coliseum bout per day.
+
+## Realism
+
+- **Birds**: anatomically shaped bodies with per-species plumage (cheek patches, masks, rumps, wing bars), feather textures, hooked parrot beaks, layered crests that rise when your bird gets fired up, feathered wings that spread when gliding, zygodactyl parrot feet, glossy eyes, breathing and head-jerk idle motion. 23 species in all.
+- **World**: a physically based sky with sun, moon and stars, image-based lighting, soft shadows, wind-blown grass, textured brick, siding, shingles and asphalt, reflective rippling water, street lights that light the road at night, power lines with perched birds that scatter, flocks that flap and glide, and ducks on the pond.
+- **Boxing**: a magpie referee who keeps position and counts knockdowns, a round-card bird, stools between rounds, three ringside judges scoring 10-point-must, split/majority/unanimous decisions and draws, punch stats by type, a jumbotron, camera flashes, crowd noise, swelling eyes as damage builds, wobbly legs when hurt, and a TV broadcast camera (press **V**).
 
 ## Controls
 
@@ -31,10 +43,10 @@ python3 -m http.server 8000
 |---|---|
 | WASD / arrows | Move |
 | Shift | Run |
-| Space | Jump · press again mid-air to flap · hold to glide |
+| Space | Jump · tap again in the air to flap · hold to glide (uses the wing meter) |
 | Mouse drag / Q, R / wheel | Camera |
 | E | Interact |
-| C | Career & rankings |
+| C | Career, rankings and settings |
 | H | Help |
 
 | Fighting | |
@@ -45,23 +57,25 @@ python3 -m http.server 8000
 | L | Uppercut |
 | Shift (hold) | Block |
 | Space (+ direction) | Dodge |
+| V | Switch camera (over the shoulder / TV) |
 | Mash J/K/L | Get up after a knockdown |
 
-Touch controls (joystick + buttons) appear automatically on phones and tablets.
+Touch controls (joystick and buttons) appear automatically on phones and tablets.
 
 ## Code layout
 
 ```
-index.html      page, HUD and overlay markup
-style.css       UI styling
-src/main.js     game loop, player controller, career flow, menus
-src/world.js    the open world: buildings, arena, NPCs, birds, collisions, sky
-src/bird.js     procedural boxing-bird model and poses
-src/fight.js    boxing combat and opponent AI
-src/training.js gym rhythm mini-games
-src/career.js   stats, rankings roster, shop items, save/load
-src/ui.js       HUD, fight HUD, modals, minimap
-src/input.js    keyboard, mouse and touch input
-src/audio.js    synthesized sound effects
+index.html       page, HUD and overlay markup
+style.css        UI styling
+src/main.js      game loop, player and flight, your team, career flow, menus, settings
+src/world.js     the open world: sky, buildings, arena, NPCs, birds, collisions
+src/bird.js      species plumage and procedural bird models
+src/textures.js  procedural canvas textures (feathers, grass, brick, water…)
+src/fight.js     boxing, opponent AI, referee, judges' scoring
+src/training.js  gym rhythm mini-games
+src/career.js    your birds, difficulty, rankings, shop, save/load
+src/ui.js        HUD, fight HUD, modals, minimap
+src/input.js     keyboard, mouse and touch input
+src/audio.js     synthesized sound effects
 src/particles.js feather particles
 ```

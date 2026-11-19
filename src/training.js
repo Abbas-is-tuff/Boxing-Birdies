@@ -11,28 +11,29 @@ export const STATIONS = {
 const LABEL = { KeyJ: 'J', KeyK: 'K', KeyL: 'L', Space: 'SPACE', ShiftLeft: 'BLOCK' };
 const ALIASES = { ShiftRight: 'ShiftLeft', Mouse0: 'KeyJ', Mouse2: 'KeyK' };
 
-function makeNotes(id) {
+function makeNotes(id, tempo = 1) {
   const notes = [];
   let t = 1.8;
   if (id === 'heavy') {
-    for (let i = 0; i < 20; i++) { notes.push({ t, key: ['KeyJ', 'KeyK', 'KeyL'][Math.floor(Math.random() * 3)] }); t += Math.random() < 0.25 ? 0.38 : 0.6 + Math.random() * 0.25; }
+    for (let i = 0; i < 20; i++) { notes.push({ t, key: ['KeyJ', 'KeyK', 'KeyL'][Math.floor(Math.random() * 3)] }); t += (Math.random() < 0.25 ? 0.38 : 0.6 + Math.random() * 0.25) * tempo; }
   } else if (id === 'speed') {
     let gap = 0.42;
-    for (let i = 0; i < 32; i++) { notes.push({ t, key: i % 2 ? 'KeyK' : 'KeyJ' }); t += gap; gap = Math.max(0.24, gap - 0.007); }
+    for (let i = 0; i < 32; i++) { notes.push({ t, key: i % 2 ? 'KeyK' : 'KeyJ' }); t += gap * tempo; gap = Math.max(0.24, gap - 0.007); }
   } else if (id === 'rope') {
     let gap = 0.55;
-    for (let i = 0; i < 26; i++) { notes.push({ t, key: 'Space' }); t += gap; gap = Math.max(0.34, gap - 0.009); }
+    for (let i = 0; i < 26; i++) { notes.push({ t, key: 'Space' }); t += gap * tempo; gap = Math.max(0.34, gap - 0.009); }
   } else {
-    for (let i = 0; i < 18; i++) { notes.push({ t, key: Math.random() < 0.5 ? 'ShiftLeft' : 'Space' }); t += 0.65 + Math.random() * 0.35; }
+    for (let i = 0; i < 18; i++) { notes.push({ t, key: Math.random() < 0.5 ? 'ShiftLeft' : 'Space' }); t += (0.65 + Math.random() * 0.35) * tempo; }
   }
   return notes;
 }
 
 export class Training {
-  constructor({ id, world, bird, ui, camera, onEnd }) {
+  constructor({ id, world, bird, ui, camera, onEnd, D }) {
+    this.D = D || { tempo: 1, window: 1 };
     this.id = id; this.def = STATIONS[id]; this.world = world; this.bird = bird; this.ui = ui; this.camera = camera; this.onEnd = onEnd;
     this.station = world.stations[id];
-    this.notes = makeNotes(id);
+    this.notes = makeNotes(id, this.D.tempo);
     this.t = 0; this.perfect = 0; this.good = 0; this.miss = 0; this.combo = 0; this.best = 0;
     this.hand = 0; this.jumpT = 0; this.bonk = 0; this.dodgeT = 0; this.done = false;
     this.end = this.notes[this.notes.length - 1].t + 1.2;
@@ -58,7 +59,7 @@ export class Training {
     const s = this.station;
     bird.root.position.copy(s.pos);
     bird.root.rotation.y = s.face;
-    bird.setPose(id === 'rope' ? 'droop' : 'guard', 12); bird.snap();
+    bird.setPose(id === 'rope' ? 'droop' : 'guard', 12); bird.snap(); bird.setCrest(0.9);
     if (id === 'rope') s.rope.visible = true;
     if (id === 'dodge') s.arm.rotation.y = 1.3;
     this.look = s.pos.clone().add(new THREE.Vector3(0, 1.5, 0));
@@ -118,11 +119,12 @@ export class Training {
         const d = Math.abs(n.t - this.t);
         if (d < bd) { bd = d; best = n; }
       }
-      if (best && bd < 0.2) this.judge(best, bd < 0.08 ? 'perfect' : 'good');
+      const W = this.D.window;
+      if (best && bd < 0.2 * W) this.judge(best, bd < 0.08 * W ? 'perfect' : 'good');
       else { this.combo = 0; this.comboEl.textContent = ''; }
     }
     for (const n of this.notes) {
-      if (!n.judged && this.t - n.t > 0.2) this.judge(n, 'miss');
+      if (!n.judged && this.t - n.t > 0.2 * this.D.window) this.judge(n, 'miss');
       const x = hitX + (n.t - this.t) * pps;
       n.el.style.left = x + 'px';
       n.el.style.display = x > W + 40 || x < -60 ? 'none' : '';
