@@ -6,7 +6,9 @@ There's no build step and there are no asset files: every bird, texture, buildin
 
 ## Play
 
-Serve the folder with any static web server (ES modules don't load from `file://`):
+**Play online:** https://abbas-is-tuff.github.io/Boxing-Birdies/
+
+To run it yourself, serve the folder with any static web server (ES modules don't load from `file://`):
 
 ```bash
 python3 -m http.server 8000
