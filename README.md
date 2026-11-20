@@ -1,4 +1,6 @@
-# 🥊 Boxing Birdies
+<p align="center"><img src="assets/logo.svg" alt="Boxing Birdies" width="600"></p>
+
+# Boxing Birdies
 
 A 3D open-world boxing career game starring birds, built with [Three.js](https://threejs.org/). Pick one of three real birds, Lightning, Cookie or Abbas, and fight your way from unranked to Undisputed Featherweight Champion of **Featherton**.
 

@@ -165,3 +165,4 @@ body.touch .wing { top: 125px; width: 190px; }
 }
 .wear-name { display: flex; gap: 10px; align-items: center; min-width: 0; }
 .sw { width: 28px; height: 28px; border-radius: 8px; border: 2px solid var(--edge); flex-shrink: 0; }
+.title-logo { display: block; width: min(560px, 100%); height: auto; margin: 0 auto; filter: drop-shadow(0 8px 24px rgba(0,0,0,.45)); }

@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-12 0 424 424" width="424" height="424">
+<title>Boxing Birdies</title>
+
+<defs>
+  <radialGradient id="bg" cx="50%" cy="38%" r="65%">
+    <stop offset="0" stop-color="#3b1d63"/><stop offset="1" stop-color="#160a2a"/>
+  </radialGradient>
+  <linearGradient id="ring" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ffd23f"/><stop offset="1" stop-color="#f59e0b"/>
+  </linearGradient>
+  <linearGradient id="crest" x1="0" y1="1" x2="0" y2="0">
+    <stop offset="0" stop-color="#f6d548"/><stop offset="0.7" stop-color="#e9d26a"/><stop offset="1" stop-color="#9a9da2"/>
+  </linearGradient>
+  <radialGradient id="head" cx="40%" cy="35%" r="70%">
+    <stop offset="0" stop-color="#b9bcc1"/><stop offset="1" stop-color="#7d8086"/>
+  </radialGradient>
+  <linearGradient id="face" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#f2c62f" stop-opacity="0"/><stop offset="0.32" stop-color="#f6d040" stop-opacity="1"/><stop offset="1" stop-color="#ffe56b"/>
+  </linearGradient>
+  <radialGradient id="glove" cx="35%" cy="30%" r="75%">
+    <stop offset="0" stop-color="#ff4b4b"/><stop offset="0.6" stop-color="#d0151f"/><stop offset="1" stop-color="#8a0c14"/>
+  </radialGradient>
+  <clipPath id="badge"><circle cx="200" cy="215" r="160"/></clipPath>
+</defs>
+<!-- badge -->
+<circle cx="200" cy="215" r="178" fill="#5b2a00"/>
+<circle cx="200" cy="208" r="178" fill="url(#ring)"/>
+<circle cx="200" cy="208" r="160" fill="url(#bg)"/>
+<!-- ring ropes -->
+<g clip-path="url(#badge)" stroke="#c81e3a" stroke-width="7" opacity="0.55">
+  <path d="M30 300 Q200 285 370 300" fill="none"/><path d="M30 330 Q200 315 370 330" fill="none"/>
+</g>
+<!-- lightning bolt -->
+<path d="M92 92 L132 92 L112 140 L142 140 L80 222 L98 158 L70 158 Z" fill="#ffd23f" stroke="#5b2a00" stroke-width="5" stroke-linejoin="round"/>
+<!-- body/shoulders -->
+<g clip-path="url(#badge)">
+  <path d="M95 400 Q100 300 190 290 Q285 290 300 400 Z" fill="#878a8f"/>
+  <path d="M135 400 Q150 320 205 318 Q250 320 262 400 Z" fill="#9a9da2"/>
+  <path d="M130 402 L270 402 L268 372 L132 372 Z" fill="#1e3a8a"/>
+  <rect x="128" y="362" width="144" height="14" fill="#facc15"/>
+</g>
+<!-- crest: long feathers sweeping up and curling forward -->
+<g fill="url(#crest)" stroke="#5b2a00" stroke-width="4" stroke-linejoin="round">
+  <path d="M170 150 Q120 95 150 22 Q160 70 196 138 Z"/>
+  <path d="M182 146 Q150 80 196 8 Q196 70 210 140 Z"/>
+  <path d="M196 144 Q190 70 246 20 Q226 82 222 142 Z"/>
+  <path d="M210 146 Q226 90 276 62 Q246 108 234 150 Z"/>
+</g>
+<!-- head -->
+<ellipse cx="200" cy="218" rx="98" ry="92" fill="url(#head)" stroke="#5b2a00" stroke-width="5"/>
+<path d="M188 127 Q300 135 298 225 Q292 300 212 308 Q150 280 152 210 Q156 150 188 127 Z" fill="url(#face)"/>
+<!-- cheek patch, eye, brow -->
+<circle cx="236" cy="252" r="30" fill="#ef7d26"/>
+<circle cx="236" cy="252" r="30" fill="none" stroke="#d9661a" stroke-width="3"/>
+<circle cx="240" cy="204" r="14" fill="#1a110a"/>
+<circle cx="245" cy="199" r="5" fill="#ffffff"/>
+<path d="M216 182 Q238 172 262 184" fill="none" stroke="#5b2a00" stroke-width="7" stroke-linecap="round"/>
+<!-- hooked beak -->
+<path d="M282 205 Q322 206 326 240 Q324 262 306 270 Q312 246 294 238 Q284 236 280 230 Z" fill="#8d8e8f" stroke="#3d3d3f" stroke-width="4" stroke-linejoin="round"/>
+<path d="M282 232 Q296 240 300 256 Q290 262 280 250 Z" fill="#6f7072" stroke="#3d3d3f" stroke-width="3"/>
+<!-- boxing glove, mid-punch -->
+<g transform="translate(-14 30) rotate(-22 300 330) scale(0.9)">
+  <rect x="236" y="352" width="66" height="40" rx="10" fill="#f5f5f5" stroke="#5b2a00" stroke-width="5"/>
+  <rect x="236" y="364" width="66" height="10" fill="#facc15"/>
+  <path d="M236 356 Q214 300 252 268 Q300 236 352 262 Q392 290 380 334 Q370 362 306 360 Z" fill="url(#glove)" stroke="#5b2a00" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M250 318 Q236 290 262 284 Q284 284 286 312" fill="none" stroke="#8a0c14" stroke-width="5" stroke-linecap="round"/>
+  <ellipse cx="318" cy="276" rx="26" ry="11" fill="#ffffff" opacity="0.55" transform="rotate(-12 318 276)"/>
+</g>
+
+</svg>
