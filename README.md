@@ -23,6 +23,16 @@ python3 -m http.server 8000
 
 Pick one to box. The other two are your **corner team**: they live in the yard by your nest, you can **spar** with them for stat gains, and they stand in your corner at every fight, cheering and giving advice between rounds. Rival cockatiels and lovebirds (Pearl and Blaze) are in the rankings too, and wild ones fly around town and sit on the power lines.
 
+## Open-world life
+
+- **Traffic**: cars, taxis, pickups and a Featherton Transit bus drive the main roads with bird drivers. They loop the plaza roundabout, stop for birds crossing, and honk if you stand in the road.
+- **Drive**: walk up to any parked car and press **E**. Your red sports car is parked next to your nest, and there are more at the gym, Seed & Feed and the Coliseum lot. Townsbirds hop out of your way (and tell you about it).
+- **More birds**: 33 species in all, including penguins, peacocks, puffins, kingfishers, woodpeckers, swans, Canada geese (flying in V formation), hummingbirds, canaries and blue-and-gold macaws. Many townsbirds wear caps, beanies, cowboy hats, top hats and shades.
+
+## Outfits
+
+**Plume Boutique** (just east of the plaza) sells 10 glove colors, 10 trunk styles, hats (headbands, caps, a beanie, a cowboy hat, a top hat) and black or gold shades. Win the title to unlock the Champion's Crown. Swap between outfits you own at your nest. Your outfit shows up everywhere, including in the ring.
+
 ## Difficulty
 
 Chosen at the start and changeable any time under **C → Settings**:
@@ -60,6 +70,14 @@ Chosen at the start and changeable any time under **C → Settings**:
 | V | Switch camera (over the shoulder / TV) |
 | Mash J/K/L | Get up after a knockdown |
 
+| Driving | |
+|---|---|
+| E | Get in / get out |
+| W / S | Gas / brake and reverse |
+| A / D | Steer |
+| Space | Handbrake |
+| F | Horn |
+
 Touch controls (joystick and buttons) appear automatically on phones and tablets.
 
 ## Code layout
@@ -68,7 +86,8 @@ Touch controls (joystick and buttons) appear automatically on phones and tablets
 index.html       page, HUD and overlay markup
 style.css        UI styling
 src/main.js      game loop, player and flight, your team, career flow, menus, settings
-src/world.js     the open world: sky, buildings, arena, NPCs, birds, collisions
+src/world.js     the open world: sky, buildings, arena, boutique, NPCs, birds, collisions
+src/vehicles.js  car models, traffic routes and drivable cars
 src/bird.js      species plumage and procedural bird models
 src/textures.js  procedural canvas textures (feathers, grass, brick, water…)
 src/fight.js     boxing, opponent AI, referee, judges' scoring

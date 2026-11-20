@@ -78,7 +78,10 @@ function texMat(kind, color = 0xffffff, extra = {}) {
 }
 
 const NPC_NAMES = ['Chirpy', 'Beaky Joe', 'Sparrowina', 'Wrenford', 'Tweetsy', 'Finchley', 'Bluebell', 'Pip', 'Quill', 'Nuthatch Ned', 'Starla', 'Kiwi Kai', 'Lark', 'Magpie Max', 'Jaybird Jules', 'Cuckoo Carl', 'Mango', 'Biscuit'];
-const NPC_SPECIES = ['sparrow', 'robin', 'bluejay', 'cardinal', 'goldfinch', 'pigeon', 'budgie', 'macaw', 'cockatielGrey', 'cockatielLutino', 'lovebirdPeach', 'lovebirdLutino', 'gull', 'magpie', 'cockatielPearl'];
+const NPC_SPECIES = ['sparrow', 'robin', 'bluejay', 'cardinal', 'goldfinch', 'pigeon', 'budgie', 'macaw', 'cockatielGrey', 'cockatielLutino', 'lovebirdPeach', 'lovebirdLutino', 'gull', 'magpie', 'cockatielPearl',
+  'penguin', 'peacock', 'puffin', 'kingfisher', 'woodpecker', 'swan', 'goose', 'hummingbird', 'canary', 'blueMacaw'];
+const NPC_SCALE = { hummingbird: 0.55, canary: 0.7, goldfinch: 0.7, swan: 1.05, goose: 1.0, penguin: 0.85, peacock: 1.0 };
+const HAT_COLORS = [0xb91c1c, 0x1d4ed8, 0x111111, 0xf5f5f5, 0x047857, 0xea580c, 0x7c3aed, 0x8b5a2b, 0xfacc15];
 const CHALLENGER_NAMES = ['Scrappy Sparrow', 'Brawlin\' Bluejay', 'Pigeon Pacquito', 'Mad Macaw', 'Knuckles Budgie', 'Cardinal Crusher', 'Gull Gutpunch', 'Magpie Mayhem'];
 const BANTER = ['Nice gloves!', 'Tweet tweet!', 'Saw your last fight!', 'Float like a feather...', '...sting like a beak!', 'Train hard, fly high!', 'Got any millet?', 'Champ in the making!',
   'The Coop is packed tonight!', 'Coach Gizzard is tough but fair.', 'Find the golden feathers!', 'Hold Space to fly!', 'Lightning\'s crest is legendary.', 'Abbas hits so hard for his size!', 'Cookie is FAST.', 'Have you seen Lightning fly?'];
@@ -110,10 +113,12 @@ export class World {
 
     this.buildSky();
     this.buildGround();
+    this.buildParking();
     this.buildPlaza();
     this.buildHome();
     this.buildGym();
     this.buildShop();
+    this.buildBoutique();
     this.buildArena();
     this.buildPark();
     this.buildTower();
@@ -247,7 +252,37 @@ export class World {
     }
   }
 
+  buildParking() {
+    const lotMat = new THREE.MeshStandardMaterial({ map: TEX.asphalt(), roughness: 0.92 });
+    const lineMat = new THREE.MeshStandardMaterial({ color: 0xf5f5f0, roughness: 0.7 });
+    const P = Math.PI;
+    this.pads = [
+      { x: -62, z: 42, w: 8, d: 9, spots: [[-62, 42, P]] },
+      { x: 65, z: 36, w: 7, d: 10, spots: [[65, 33.4, P / 2], [65, 38.6, P / 2]] },
+      { x: 17, z: -44, w: 13, d: 8, spots: [[12.5, -44, P], [15.5, -44, P], [18.5, -44, P], [21.5, -44, P]] },
+      { x: -30, z: -27, w: 9, d: 7, spots: [[-33, -27, 0], [-30, -27, 0], [-27, -27, 0]] },
+    ];
+    this.parkingSpots = [];
+    for (const pad of this.pads) {
+      const m = new THREE.Mesh(groundPlane(pad.w, pad.d, 6), lotMat);
+      m.position.set(pad.x, 0.06, pad.z); m.receiveShadow = true; this.scene.add(m);
+      this.mapRects.push({ x: pad.x, z: pad.z, w: pad.w, d: pad.d, color: '#5d6168' });
+      for (const [x, z, yaw] of pad.spots) {
+        this.parkingSpots.push({ x, z, yaw });
+        const along = Math.abs(Math.sin(yaw)) > 0.5;
+        for (const s of [-1, 1]) {
+          const ln = new THREE.Mesh(new THREE.PlaneGeometry(along ? 4.6 : 0.12, along ? 0.12 : 4.6), lineMat);
+          ln.rotation.x = -Math.PI / 2;
+          ln.position.set(x + (along ? 0 : s * 1.5), 0.075, z + (along ? s * 1.5 : 0));
+          this.scene.add(ln);
+        }
+      }
+    }
+    if (!this.hi) this.parkingSpots = this.parkingSpots.slice(0, 6);
+  }
+
   isOnRoad(x, z, pad = 2) {
+    if ((this.pads || []).some((r) => Math.abs(x - r.x) < r.w / 2 + pad && Math.abs(z - r.z) < r.d / 2 + pad)) return true;
     return this.roads.some((r) => Math.abs(x - r.x) < r.w / 2 + pad && Math.abs(z - r.z) < r.d / 2 + pad);
   }
 
@@ -286,7 +321,7 @@ export class World {
     sign.position.set(0, 1.5, 6.6); this.scene.add(sign);
     for (let i = 0; i < 6; i++) {
       const a = i / 6 * Math.PI * 2 + 0.3;
-      this.addBench(Math.cos(a) * 11, Math.sin(a) * 11, -a + Math.PI / 2);
+      this.addBench(Math.cos(a) * 8.5, Math.sin(a) * 8.5, -a + Math.PI / 2);
     }
   }
 
@@ -500,6 +535,34 @@ export class World {
     keeper.root.position.set(x - 3, 0, z + 5.6); this.scene.add(keeper.root);
     this.keeper = keeper;
     this.addInteract('shop', x, z + 6, 'Shop at Seed & Feed', 3);
+  }
+
+  buildBoutique() {
+    const x = 30, z = 14;
+    this.addBox(x, z, 10, 8, 5, 0, { material: texMat('siding', 0xf4c2d7), mapColor: '#f4a6c8', unit: 2.2 });
+    this.addBox(x, z, 10.6, 8.6, 0.35, 0, { y0: 5, material: texMat('concrete', 0x6b5a7a) });
+    const g = new THREE.Group(); this.scene.add(g);
+    this.addWindow(g, x - 2.9, 2.1, z - 4.01, Math.PI, 2.6, 2.3);
+    this.addWindow(g, x + 2.9, 2.1, z - 4.01, Math.PI, 2.6, 2.3);
+    const door = new THREE.Mesh(boxWorldUV(1.5, 2.6, 0.1, 1), texMat('wood', 0x3b1f4a)); door.position.set(x, 1.3, z - 4.02); this.scene.add(door);
+    for (let i = 0; i < 7; i++) {
+      const st = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.05, 1.8), new THREE.MeshPhysicalMaterial({ color: i % 2 ? 0xffffff : 0x7c3aed, roughness: 0.6, sheen: 1, sheenColor: new THREE.Color(0xffffff) }));
+      st.position.set(x - 4.5 + i * 1.5, 3.55, z - 4.8); st.rotation.x = -0.35; st.castShadow = true; this.scene.add(st);
+    }
+    const sign = makeSign('PLUME BOUTIQUE', { w: 6.5, h: 1.1, bg: '#3b0f4a', fg: '#f9a8d4', sub: 'Gloves · Trunks · Hats · Shades' });
+    sign.position.set(x, 4.45, z - 4.06); sign.rotation.y = Math.PI; this.scene.add(sign);
+    // A mannequin modelling the latest look, and the shopkeeper
+    const ped = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.9, 0.3, 24), texMat('concrete', 0xe8e0f0));
+    ped.position.set(x - 3.6, 0.15, z - 5.6); ped.castShadow = true; this.scene.add(ped);
+    const mq = makeBird({ species: 'cockatielPearl', glove: 0xd4af37, trunks: 0x5b21b6, trim: 0xfacc15, hat: 'tophat', hatColor: 0x111111, glasses: 'gold' });
+    mq.root.position.set(x - 3.6, 0.3, z - 5.6); mq.root.rotation.y = Math.PI; mq.setPose('guard'); mq.snap();
+    this.scene.add(mq.root);
+    this.colliders.push({ type: 'circle', x: x - 3.6, z: z - 5.6, r: 0.9, bottom: 0, top: 0.3 });
+    const clerk = makeBird({ species: 'peacock', gloves: false, glasses: 'black' });
+    clerk.root.position.set(x + 3.4, 0, z - 5.3); clerk.root.rotation.y = Math.PI;
+    this.scene.add(clerk.root);
+    this.clerk = clerk;
+    this.addInteract('boutique', x, z - 5.8, 'Shop at Plume Boutique (outfits)', 3);
   }
 
   makeGlass() {
@@ -834,6 +897,11 @@ export class World {
       this.scene.add(d.root);
       this.ducks.push({ sb: d, a: rand(0, Math.PI * 2), r: rand(3, P.r - 2), spd: rand(0.12, 0.25) * (Math.random() < 0.5 ? 1 : -1) });
     }
+    for (let i = 0; i < 2; i++) {
+      const sw = makeSmallBird('swan', 2.6);
+      this.scene.add(sw.root);
+      this.ducks.push({ sb: sw, a: i * Math.PI, r: 5, spd: 0.08 });
+    }
     for (let i = 0; i < 4; i++) {
       const a = i * Math.PI / 2 + 0.5;
       this.addBench(P.x + Math.cos(a) * (P.r + 3), P.z + Math.sin(a) * (P.r + 3), -a - Math.PI / 2);
@@ -1107,13 +1175,13 @@ export class World {
   }
 
   buildFlocks() {
-    const kinds = ['pigeon', 'gull', 'lovebirdPeach', 'cockatielGrey', 'sparrow', 'lovebirdPeach'];
-    for (let f = 0; f < (this.hi ? 6 : 4); f++) {
+    const kinds = ['pigeon', 'goose', 'gull', 'lovebirdPeach', 'cockatielGrey', 'sparrow', 'canary', 'goose', 'lovebirdPeach'];
+    for (let f = 0; f < (this.hi ? 9 : 5); f++) {
       const species = kinds[f % kinds.length];
       const members = [];
       const n = 5 + Math.floor(Math.random() * (this.hi ? 6 : 3));
       for (let i = 0; i < n; i++) {
-        const sb = makeSmallBird(species, species === 'gull' ? 2.2 : 1.7);
+        const sb = makeSmallBird(species, species === 'gull' || species === 'goose' ? 2.3 : 1.7);
         sb.root.traverse((o) => { o.castShadow = false; });
         this.scene.add(sb.root);
         const row = Math.ceil(i / 2), side = i % 2 ? 1 : -1;
@@ -1124,7 +1192,7 @@ export class World {
   }
 
   buildPigeons() {
-    const spots = [[0, 0, 13], [POND.x, POND.z, POND.r + 4], [0, 28, 6], [-45, -20, 5], [HOME.x - 14, HOME.z - 7, 2]];
+    const spots = [[0, 0, 9.5], [POND.x, POND.z, POND.r + 4], [0, 28, 6], [-45, -20, 5], [HOME.x - 22, HOME.z - 7, 2]];
     const n = this.hi ? 30 : 18;
     for (let i = 0; i < n; i++) {
       const [cx, cz, rr] = spots[i % spots.length];
@@ -1141,10 +1209,14 @@ export class World {
   // ---------- NPC townsfolk ----------
   buildNPCs() {
     const names = [...NPC_NAMES].sort(() => Math.random() - 0.5);
-    for (let i = 0; i < (this.hi ? 16 : 11); i++) {
-      const species = NPC_SPECIES[i % NPC_SPECIES.length];
-      const bird = makeBird({ species, gloves: false });
-      bird.root.scale.setScalar(rand(0.78, 0.95));
+    const order = [...NPC_SPECIES].sort(() => Math.random() - 0.5);
+    for (let i = 0; i < (this.hi ? 26 : 14); i++) {
+      const species = order[i % order.length];
+      const look = { species, gloves: false };
+      if (Math.random() < 0.45) { look.hat = pick(['cap', 'beanie', 'headband', 'cowboy', 'tophat', 'cap']); look.hatColor = pick(HAT_COLORS); }
+      if (Math.random() < 0.18) look.glasses = 'black';
+      const bird = makeBird(look);
+      bird.root.scale.setScalar(NPC_SCALE[species] ?? rand(0.78, 0.95));
       bird.root.position.copy(this.randomWalkablePoint());
       this.scene.add(bird.root);
       this.npcs.push({ bird, species, name: names[i % names.length], target: this.randomWalkablePoint(), wait: rand(0, 3), challenger: null, bubble: null, bubbleT: 0, talkCd: rand(2, 8) });
@@ -1210,9 +1282,10 @@ export class World {
     }
   }
 
-  resolve(pos, radius = 0.45, height = 2.2) {
+  resolve(pos, radius = 0.45, height = 2.2, ignore = null) {
     let hit = false;
     for (const c of this.colliders) {
+      if (ignore && c.owner === ignore) continue;
       if (pos.y >= c.top - 0.55 || pos.y + height <= c.bottom) continue;
       if (c.type === 'box') {
         const cx = Math.max(c.minX, Math.min(pos.x, c.maxX));
@@ -1301,7 +1374,7 @@ export class World {
       }
       pos.needsUpdate = true;
     }
-    for (const b of [this.coach, this.promoter, this.keeper, ...(this.judges || [])]) if (b) { b.walk(dt, 0); b.update(dt); }
+    for (const b of [this.coach, this.promoter, this.keeper, this.clerk, ...(this.judges || [])]) if (b) { b.walk(dt, 0); b.update(dt); }
     for (const b of [this.referee, this.cardBird]) if (b && !b.driven) { b.walk(dt, 0); b.update(dt); }
 
     for (const k of ['heavy', 'speed']) {
@@ -1356,6 +1429,14 @@ export class World {
       b.update(dt);
       this.updateBubble(n, dt, toPlayer);
     }
+  }
+
+  say(n, text, t = 2.5) {
+    if (n.bubble) n.bird.root.remove(n.bubble);
+    n.bubble = makeTextSprite(text, { size: 0.75, border: '#ff4d4d' });
+    n.bubble.position.set(0, 3.3, 0);
+    n.bird.root.add(n.bubble);
+    n.bubbleT = t; n.talkCd = 6;
   }
 
   updateBubble(n, dt, toPlayer) {

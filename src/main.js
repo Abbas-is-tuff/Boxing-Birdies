@@ -5,7 +5,8 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { makeBird, SPECIES } from './bird.js';
 import { World, lerpAngle, RING, RING_CORNERS, HOME, GYM, SHOP, ARENA, TOWER, WORLD_R, TEAM_SPOTS } from './world.js';
-import { Career, SHOP_ITEMS, statsFor, MY_BIRDS, DIFFICULTY } from './career.js';
+import { Career, SHOP_ITEMS, statsFor, MY_BIRDS, DIFFICULTY, OUTFITS, OUTFIT_SLOTS } from './career.js';
+import { Vehicles, seatBird } from './vehicles.js';
 import { Fight } from './fight.js';
 import { Training, STATIONS } from './training.js';
 import { UI } from './ui.js';
@@ -67,6 +68,8 @@ const input = new Input(renderer.domElement);
 input.onTouchEnabled = () => { if (G.mode !== 'title') ui.el.touch.classList.remove('hidden'); };
 const world = new World(scene, renderer, settings.quality);
 const particles = new Particles(scene);
+const vehicles = new Vehicles(scene, world, settings.quality);
+vehicles.onHonk = () => sfx.honk();
 world.onPigeonScatter = () => { if (Math.random() < 0.3) sfx.flap(); };
 
 const G = {
@@ -128,7 +131,7 @@ function startGame(career, isNew) {
   preview.birds = [];
   document.getElementById('title').classList.add('hidden');
   const me = career.bird;
-  const bird = makeBird({ species: me.species, glove: me.glove, trunks: me.trunks, trim: me.trim });
+  const bird = makeBird(career.look());
   scene.add(bird.root);
   G.player = { bird, pos: new THREE.Vector3(HOME.x, 0, HOME.z - 11), vel: new THREE.Vector3(), yaw: Math.PI, onGround: true, flight: 100, flapT: 0, gliding: false };
   G.cam.yaw = 0;
@@ -306,6 +309,12 @@ function nearestInteraction() {
     const d = Math.hypot(p.x - pos.x, p.z - pos.z);
     if (d < 2.6 && d < bd && pos.y < 2) { best = { kind: 'team', team: t }; bd = d; }
   }
+  for (const car of vehicles.parked) {
+    if (car.driven) continue;
+    const p = car.group.position;
+    const d = Math.hypot(p.x - pos.x, p.z - pos.z);
+    if (d < car.L / 2 + 1.4 && d < bd && pos.y < 2.5) { best = { kind: 'car', car }; bd = d; }
+  }
   for (const n of world.npcs) {
     if (!n.challenger) continue;
     const p = n.bird.root.position;
@@ -325,21 +334,20 @@ function updateWorldMode(dt) {
     const near = nearestInteraction();
     if (near) {
       ui.prompt(near.kind === 'npc' ? `<b>E</b> — Accept street fight from ${near.npc.challenger.name}`
-        : near.kind === 'team' ? `<b>E</b> — Talk to ${near.team.name}` : `<b>E</b> — ${near.it.label}`);
+        : near.kind === 'team' ? `<b>E</b> — Talk to ${near.team.name}`
+        : near.kind === 'car' ? `<b>E</b> — Drive ${near.car.mine ? 'your sports car' : `this ${near.car.type}`}` : `<b>E</b> — ${near.it.label}`);
     } else ui.prompt(null);
     if (near && input.wasPressed('KeyE')) {
       ui.prompt(null);
       if (near.kind === 'npc') challengeDialog(near.npc);
+      else if (near.kind === 'car') enterCar(near.car);
       else if (near.kind === 'team') teamDialog(near.team);
       else interact(near.it.id);
     }
     if (input.wasPressed('KeyC', 'Tab')) careerPanel();
     if (input.wasPressed('KeyH', 'Escape')) helpPanel();
 
-    for (const f of world.feathers) {
-      if (f.taken) continue;
-      if (G.player.pos.distanceTo(f.mesh.position) < 1.7 || (Math.hypot(G.player.pos.x - f.x, G.player.pos.z - f.z) < 1.2 && Math.abs(G.player.pos.y + 1 - f.y) < 1.6)) collectFeather(f);
-    }
+    checkFeathers();
   } else {
     G.player.bird.walk(dt, 0); G.player.bird.update(dt);
   }
@@ -365,8 +373,16 @@ function drawMap() {
   const dots = [];
   for (const n of world.npcs) dots.push({ x: n.bird.root.position.x, z: n.bird.root.position.z, color: n.challenger ? '#ff4d4d' : '#e5e7eb', r: n.challenger ? 4 : 2.5 });
   for (const t of G.team) dots.push({ x: t.bird.root.position.x, z: t.bird.root.position.z, color: '#4ade80', r: 3.5 });
+  for (const v of vehicles.all) dots.push({ x: v.group.position.x, z: v.group.position.z, color: v.mine ? '#f87171' : '#93c5fd', r: v.T.bus ? 4 : 2.6 });
   for (const f of world.feathers) if (!f.taken && G.player.pos.distanceTo(f.mesh.position) < 35) dots.push({ x: f.x, z: f.z, color: '#ffd700', r: 3 });
   ui.drawMinimap(world, G.player.pos, G.player.yaw, { markers, dots });
+}
+
+function checkFeathers() {
+  for (const f of world.feathers) {
+    if (f.taken) continue;
+    if (G.player.pos.distanceTo(f.mesh.position) < 1.7 || (Math.hypot(G.player.pos.x - f.x, G.player.pos.z - f.z) < 1.2 && Math.abs(G.player.pos.y + 1 - f.y) < 1.6)) collectFeather(f);
+  }
 }
 
 function collectFeather(f) {
@@ -412,6 +428,7 @@ function interact(id) {
     ui.modal('Your Nest', `<p>Cozy, twiggy, home. Sleeping restores all energy, starts Day ${c.day + 1} and saves your career.</p>
       <p class="muted">It's ${c.timeLabel}. Energy ${Math.round(c.energy)}%.</p>`, [
       { label: 'Not yet', secondary: true },
+      { label: '👕 Change outfit', secondary: true, onClick: () => wardrobeDialog(false) },
       { label: 'Save game', secondary: true, onClick: () => { c.save(); ui.toast('Game saved.'); } },
       { label: '💤 Sleep', onClick: () => {
         newDay(7 * 60, 100);
@@ -425,6 +442,7 @@ function interact(id) {
   } else if (id === 'coach') coachDialog();
   else if (id === 'shop') shopDialog();
   else if (id === 'promoter') promoterDialog();
+  else if (id === 'boutique') wardrobeDialog(true);
 }
 
 const TEAM_LINES = {
@@ -570,6 +588,7 @@ function settingsPanel() {
 function helpPanel() {
   ui.modal('Controls', `
     <p><b>Exploring</b><br><kbd>W A S D</kbd> move · <kbd>Shift</kbd> run · <kbd>Space</kbd> jump; tap again in the air to flap, hold to glide (uses the wing meter) · drag mouse / <kbd>Q</kbd> <kbd>R</kbd> to turn camera · wheel zoom · <kbd>E</kbd> interact · <kbd>C</kbd> career & settings</p>
+    <p><b>Driving</b><br>Walk up to a parked car and press <kbd>E</kbd>. <kbd>W</kbd>/<kbd>S</kbd> gas and brake/reverse · <kbd>A</kbd>/<kbd>D</kbd> steer · <kbd>Space</kbd> handbrake · <kbd>F</kbd> horn · <kbd>E</kbd> get out. Your red sports car is parked next to your nest.</p>
     <p><b>Fighting</b><br><kbd>W A S D</kbd> move & circle · <kbd>J</kbd> / left-click jab · <kbd>K</kbd> / right-click hook · <kbd>L</kbd> uppercut · hold <kbd>Shift</kbd> block · <kbd>Space</kbd> dodge (+ direction) · <kbd>V</kbd> switch camera. Knocked down? Mash <kbd>J</kbd><kbd>K</kbd><kbd>L</kbd> to get up!</p>
     <p><b>Career</b><br>Train at the gym, spar with your corner team, eat at Seed & Feed and sleep at your nest. Climb the Coliseum rankings, win street fights for cash, and become champion.</p>`,
     [{ label: 'Got it' }]);
@@ -665,7 +684,7 @@ function findClearSpot(mid) {
     for (let a = 0; a < Math.PI * 2; a += Math.PI / 6) {
       const x = mid.x + Math.cos(a) * r, z = mid.z + Math.sin(a) * r;
       if (Math.hypot(x, z) > WORLD_R - 6) continue;
-      if (!world.colliders.some((cl) => world.overlaps(cl, x, z, 5.4))) return new THREE.Vector3(x, 0.1, z);
+      if (!world.isOnRoad(x, z, 4) && !world.colliders.some((cl) => world.overlaps(cl, x, z, 5.4))) return new THREE.Vector3(x, 0.1, z);
       if (r === 0) break;
     }
   }
@@ -736,6 +755,7 @@ function endFight(res, { opp, oppBird, kind, npc, sparWith }) {
       title = titleFight ? '🏆 NEW CHAMPION! 🏆' : defense ? 'Title Defended!' : 'Victory!';
       lines.push(`${c.name} beat <b>${opp.name}</b> by <b>${res.method}</b> in round ${res.round}.`);
       lines.push(`Purse: <b>+$${purse}</b> · Rank: ${wasRank} → <b>${c.rankLabel}</b>`);
+      if (titleFight) lines.push('👑 The <b>Champion\'s Crown</b> is now in your wardrobe (change outfit at your nest or Plume Boutique).');
       if (titleFight) lines.push(`🎉 <b>${c.name}</b> is the Undisputed Featherweight Champion of Featherton! ${G.team.map((t) => t.name).join(' and ')} are losing their minds in the corner.`);
       sfx.levelUp();
     } else if (res.draw) {
@@ -799,6 +819,163 @@ function endFight(res, { opp, oppBird, kind, npc, sparWith }) {
   ui.modal(title, lines.map((l) => (l.startsWith('<div') ? l : `<p>${l}</p>`)).join(''), [{ label: 'Continue' }]);
 }
 
+// ---------- driving ----------
+function enterCar(car) {
+  G.mode = 'drive'; G.car = car; car.driven = true; car.speed = 0; car.steer = 0;
+  const b = G.player.bird;
+  scene.remove(b.root); car.group.add(b.root); seatBird(b, car.T);
+  b.setCrest(0.9);
+  ui.updateWing(0, false);
+  G.carCamYaw = 0;
+  sfx.engine(0.05, 0);
+  ui.toast('W/S gas & brake · A/D steer · Space handbrake · F horn · E get out', '#93c5fd', 5000);
+}
+
+function exitCar() {
+  const car = G.car, b = G.player.bird;
+  car.group.remove(b.root); scene.add(b.root);
+  b.root.scale.setScalar(1); b.root.rotation.set(0, car.yaw, 0);
+  b.legs.forEach((l) => { l.rotation.x = 0; });
+  b.idleLook = false; b.setPose('idle'); b.snap();
+  const side = new THREE.Vector3(Math.cos(car.yaw), 0, -Math.sin(car.yaw));
+  let spot = null;
+  for (const s of [1, -1]) {
+    const p = car.group.position.clone().addScaledVector(side, s * (car.W / 2 + 1)); p.y = 0;
+    const q = p.clone(); world.resolve(q, 0.5);
+    if (q.distanceTo(p) < 0.05) { spot = p; break; }
+    if (!spot) spot = q;
+  }
+  G.player.pos.copy(spot); G.player.vel.set(0, 0, 0); G.player.yaw = car.yaw; G.player.onGround = true;
+  car.speed = 0; car.driven = false;
+  G.car = null; G.mode = 'world';
+  sfx.engine(0);
+}
+
+function updateDrive(dt) {
+  const car = G.car, c = G.career, pos = car.group.position;
+  const f = new THREE.Vector3(Math.sin(car.yaw), 0, Math.cos(car.yaw));
+  if (!ui.modalOpen) {
+    const ax = input.axis();
+    const hb = input.isDown('Space');
+    if (ax.y > 0.05) car.speed += (car.speed < -0.5 ? 22 : 13) * ax.y * dt;
+    else if (ax.y < -0.05) car.speed -= (car.speed > 0.5 ? 24 : 7) * -ax.y * dt;
+    else car.speed -= Math.sign(car.speed) * Math.min(Math.abs(car.speed), 3 * dt);
+    if (hb) car.speed *= Math.exp(-2.5 * dt);
+    car.speed = clamp(car.speed, -9, car.type === 'sports' ? 34 : 27);
+    car.steer += (-ax.x - car.steer) * Math.min(1, dt * 6);
+    car.yaw += car.steer * clamp(car.speed / 7, -1, 1) * (hb ? 2.2 : 1.5) * dt;
+    f.set(Math.sin(car.yaw), 0, Math.cos(car.yaw));
+    pos.addScaledVector(f, car.speed * dt);
+    let hit = false;
+    const span = car.L / 2 - car.W / 2;
+    for (const off of [-span, 0, span]) {
+      const p = new THREE.Vector3(pos.x + f.x * off, 0.2, pos.z + f.z * off);
+      const q = p.clone(); world.resolve(q, car.W / 2 + 0.05, 1.4, car);
+      const dx = q.x - p.x, dz = q.z - p.z;
+      if (dx * dx + dz * dz > 1e-6) { pos.x += dx; pos.z += dz; hit = true; }
+    }
+    if (hit && Math.abs(car.speed) > 1.5) { if (Math.abs(car.speed) > 8) sfx.crash(); car.speed *= -0.3; }
+    const r = Math.hypot(pos.x, pos.z);
+    if (r > WORLD_R) { pos.x *= WORLD_R / r; pos.z *= WORLD_R / r; car.speed *= 0.5; }
+    pos.y = 0.1;
+    car.group.rotation.y = car.yaw;
+    vehicles.syncColliders(car);
+    for (const w of car.wheels) { w.g.rotation.x += car.speed * dt / car.T.r; if (w.front) w.steer.rotation.y = car.steer * 0.45; }
+    // Birds on foot hop out of the way
+    for (const n of world.npcs) {
+      const p = n.bird.root.position;
+      const dx = p.x - pos.x, dz = p.z - pos.z;
+      if (Math.abs(car.speed) > 2 && Math.hypot(dx, dz) < car.L / 2 + 0.8) {
+        const lat = dx * f.z - dz * f.x >= 0 ? 1 : -1;
+        p.x += f.z * lat * 2.6; p.z -= f.x * lat * 2.6;
+        world.resolve(p, 0.5);
+        world.say(n, ['Hey! Watch the road!', 'Beep beep yourself!', 'Slow down!'][Math.floor(Math.random() * 3)]);
+        callOf(n.species);
+      }
+    }
+    G.carCamYaw = (G.carCamYaw || 0) - input.mouseDX * 0.005;
+    if (!input.dragging) G.carCamYaw *= Math.exp(-2 * dt);
+    if (input.wasPressed('KeyF')) sfx.honk();
+    if (input.wasPressed('KeyC', 'Tab')) careerPanel();
+    if (input.wasPressed('KeyE')) { exitCar(); return; }
+    c.time += dt * TIME_SCALE;
+    if (c.time >= 24 * 60) { exitCar(); passOut(); return; }
+    ui.prompt(`<b>E</b> — Get out · ${Math.round(Math.abs(car.speed) * 3.6)} km/h · <b>F</b> horn`);
+  }
+  G.player.pos.set(pos.x, 0, pos.z); G.player.yaw = car.yaw;
+  checkFeathers();
+  sfx.engine(0.04 + Math.min(0.08, Math.abs(car.speed) / 300), car.speed);
+  G.player.bird.update(dt);
+  const cy = car.yaw + Math.PI + G.carCamYaw;
+  const back = car.T.bus ? 13 : 8.5, up = car.T.bus ? 5 : 3.3;
+  const desired = new THREE.Vector3(pos.x + Math.sin(cy) * back, up, pos.z + Math.cos(cy) * back);
+  camera.position.lerp(desired, 1 - Math.exp(-6 * dt));
+  camera.lookAt(pos.x + f.x * 3, 1.2, pos.z + f.z * 3);
+  updateTeam(dt);
+  world.updateNPCs(dt, G.player.pos, ui.modalOpen);
+  G.hudT -= dt;
+  if (G.hudT <= 0) { G.hudT = 0.25; ui.updateHUD(c, world.feathers.length); }
+  G.mapT -= dt;
+  if (G.mapT <= 0) { G.mapT = 0.1; drawMap(); }
+}
+
+// ---------- outfits ----------
+function applyOutfit() {
+  const c = G.career, old = G.player.bird;
+  const nb = makeBird(c.look());
+  nb.root.position.copy(old.root.position); nb.root.rotation.copy(old.root.rotation);
+  scene.remove(old.root); scene.add(nb.root);
+  G.player.bird = nb;
+  c.save();
+}
+
+function swatchCss(slot, it) {
+  const me = G.career.bird;
+  const hex = (n) => '#' + n.toString(16).padStart(6, '0');
+  if (slot === 'gloves') return hex(it.color ?? me.glove);
+  if (slot === 'trunks') return `linear-gradient(135deg, ${hex(it.trunks ?? me.trunks)} 60%, ${hex(it.trim ?? me.trim)} 60%)`;
+  if (slot === 'hats') return it.hat ? hex(it.color) : 'transparent';
+  return it.glasses === 'gold' ? '#d4af37' : it.glasses ? '#111418' : 'transparent';
+}
+
+function wardrobeDialog(atShop) {
+  const c = G.career;
+  const pp = G.player.bird.root.position;
+  G.player.bird.root.rotation.y = Math.atan2(camera.position.x - pp.x, camera.position.z - pp.z);
+  let scroll = 0;
+  const render = () => {
+    const html = OUTFIT_SLOTS.map(([slot, label]) => `<p style="margin-top:14px"><b>${label}</b></p>` + OUTFITS[slot].map((it) => {
+      const owned = c.wardrobe.includes(it.id) || (it.champion && c.champion);
+      const on = c.outfit[slot] === it.id;
+      let btn;
+      if (on) btn = '<button disabled>Wearing</button>';
+      else if (owned) btn = `<button class="secondary" data-wear="${slot}:${it.id}">Wear</button>`;
+      else if (it.champion) btn = '<button disabled>Win the title</button>';
+      else if (!atShop) btn = '<button disabled>Buy at boutique</button>';
+      else btn = `<button data-buy="${slot}:${it.id}" ${c.money < it.price ? 'disabled' : ''}>$${it.price}</button>`;
+      return `<div class="shop-item"><div class="wear-name"><span class="sw" style="background:${swatchCss(slot, it)}"></span><b>${it.name}</b></div>${btn}</div>`;
+    }).join('')).join('');
+    const body = ui.modal(atShop ? 'Plume Boutique' : 'Your Wardrobe', `<p class="muted">${atShop ? `"Darling, those feathers deserve better." You have <b>$${Math.floor(c.money)}</b>.` : 'Swap between outfits you own. Buy new ones at Plume Boutique, across from the plaza.'} Changes show on ${c.name} right away.</p>` + html, [{ label: 'Done' }]);
+    const panel = body.parentElement; panel.scrollTop = scroll;
+    const act = (b, buy) => () => {
+      scroll = panel.scrollTop;
+      const [slot, id] = b.dataset[buy ? 'buy' : 'wear'].split(':');
+      if (buy) {
+        const it = OUTFITS[slot].find((x) => x.id === id);
+        if (c.money < it.price) return;
+        c.money -= it.price; c.wardrobe.push(id); sfx.coin(); ui.toast(`Bought ${it.name}!`, '#f9a8d4');
+      }
+      c.outfit[slot] = id;
+      applyOutfit();
+      G.player.bird.root.rotation.y = Math.atan2(camera.position.x - pp.x, camera.position.z - pp.z);
+      render();
+    };
+    body.querySelectorAll('[data-wear]').forEach((b) => { b.onclick = act(b, false); });
+    body.querySelectorAll('[data-buy]').forEach((b) => { b.onclick = act(b, true); });
+  };
+  render();
+}
+
 // ---------- title camera ----------
 function updateTitle(dt) {
   G.titleT += dt;
@@ -836,6 +1013,7 @@ function frame() {
     const c = G.career;
     world.update(dt, G.player.pos, c.time, camera);
     if (G.mode === 'world') updateWorldMode(dt);
+    else if (G.mode === 'drive') updateDrive(dt);
     else if (G.mode === 'fight' && G.fight) {
       if (!ui.modalOpen) G.fight.update(dt, input);
       if (G.fight) G.fight.updateCamera(camera, dt);
@@ -852,6 +1030,14 @@ function frame() {
       sfx.crowd(G.mode === 'fight' && G.fight && G.fight.arena ? 0.08 + world.crowdHype * 0.06 : inArena ? 0.03 : 0);
     }
   }
+  {
+    const obs = [];
+    for (const n of world.npcs) if (n.bird.root.visible) obs.push(n.bird.root.position);
+    if (G.player && G.mode !== 'drive' && G.mode !== 'fight') obs.push({ x: G.player.pos.x, z: G.player.pos.z, player: true });
+    if (G.fight) obs.push(G.fight.p.bird.root.position, G.fight.o.bird.root.position);
+    for (const t of G.team) obs.push(t.bird.root.position);
+    vehicles.update(dt, obs, G.player ? G.player.pos : camera.position);
+  }
   renderer.toneMappingExposure = 0.62 + (world.night || 0) * 0.45;
   particles.update(dt);
   if (composer) composer.render(); else renderer.render(scene, camera);
@@ -860,4 +1046,4 @@ function frame() {
 
 buildTitle();
 frame();
-window.__game = { G, world, scene, camera, ui, renderer };
+window.__game = { G, world, scene, camera, ui, renderer, vehicles };

@@ -64,6 +64,52 @@ export const SHOP_ITEMS = [
   { id: 'lungs', name: 'Cuttlebone Supplements', desc: '+6 Stamina (permanent)', price: 320, gear: true, stat: 'stamina', amount: 6 },
 ];
 
+// Outfits sold at Plume Boutique. 'own' items are each bird's starting kit.
+export const OUTFITS = {
+  gloves: [
+    { id: 'g-own', name: 'Your first gloves', price: 0 },
+    { id: 'g-red', name: 'Classic Red', price: 60, color: 0xc0141c },
+    { id: 'g-blue', name: 'Royal Blue', price: 60, color: 0x1d4ed8 },
+    { id: 'g-black', name: 'Midnight Black', price: 60, color: 0x18181b },
+    { id: 'g-white', name: 'Snow White', price: 60, color: 0xf5f5f5 },
+    { id: 'g-pink', name: 'Bubblegum Pink', price: 80, color: 0xf472b6 },
+    { id: 'g-lime', name: 'Lime Zest', price: 80, color: 0x84cc16 },
+    { id: 'g-purple', name: 'Grape Crush', price: 80, color: 0x7c3aed },
+    { id: 'g-orange', name: 'Tangerine', price: 80, color: 0xea580c },
+    { id: 'g-gold', name: 'Gold Leaf', price: 250, color: 0xd4af37 },
+  ],
+  trunks: [
+    { id: 't-own', name: 'Your first trunks', price: 0 },
+    { id: 't-navy', name: 'Navy & Gold', price: 90, trunks: 0x1e3a8a, trim: 0xfacc15 },
+    { id: 't-blackred', name: 'Black & Red', price: 90, trunks: 0x18181b, trim: 0xdc2626 },
+    { id: 't-white', name: 'Fight Night White', price: 90, trunks: 0xf5f5f5, trim: 0x1d4ed8 },
+    { id: 't-emerald', name: 'Emerald', price: 110, trunks: 0x047857, trim: 0xffffff },
+    { id: 't-purple', name: 'Royal Purple', price: 110, trunks: 0x5b21b6, trim: 0xfacc15 },
+    { id: 't-pink', name: 'Hot Pink', price: 110, trunks: 0xdb2777, trim: 0x111827 },
+    { id: 't-orange', name: 'Sunset', price: 110, trunks: 0xea580c, trim: 0xfef3c7 },
+    { id: 't-sky', name: 'Sky Blue', price: 110, trunks: 0x38bdf8, trim: 0xffffff },
+    { id: 't-gold', name: 'Champion Gold', price: 300, trunks: 0xd4af37, trim: 0x111111 },
+  ],
+  hats: [
+    { id: 'h-none', name: 'No hat', price: 0 },
+    { id: 'h-band-red', name: 'Red Headband', price: 40, hat: 'headband', color: 0xdc2626 },
+    { id: 'h-band-white', name: 'White Headband', price: 40, hat: 'headband', color: 0xf5f5f5 },
+    { id: 'h-cap-blue', name: 'Blue Cap', price: 70, hat: 'cap', color: 0x1d4ed8 },
+    { id: 'h-cap-black', name: 'Black Cap', price: 70, hat: 'cap', color: 0x18181b },
+    { id: 'h-beanie', name: 'Orange Beanie', price: 80, hat: 'beanie', color: 0xea580c },
+    { id: 'h-cowboy', name: 'Cowboy Hat', price: 150, hat: 'cowboy', color: 0x8b5a2b },
+    { id: 'h-tophat', name: 'Top Hat', price: 200, hat: 'tophat', color: 0x111111 },
+    { id: 'h-crown', name: 'Champion\'s Crown', price: 0, hat: 'crown', color: 0xd4af37, champion: true },
+  ],
+  glasses: [
+    { id: 'x-none', name: 'No shades', price: 0 },
+    { id: 'x-black', name: 'Black Shades', price: 90, glasses: 'black' },
+    { id: 'x-gold', name: 'Gold Shades', price: 180, glasses: 'gold' },
+  ],
+};
+export const OUTFIT_SLOTS = [['gloves', 'Gloves'], ['trunks', 'Trunks'], ['hats', 'Hats'], ['glasses', 'Shades']];
+const findItem = (slot, id) => OUTFITS[slot].find((i) => i.id === id) || OUTFITS[slot][0];
+
 export class Career {
   constructor(data) { Object.assign(this, data); }
 
@@ -79,6 +125,8 @@ export class Career {
       playerRank: 11, rosterOrder: ROSTER.map((_, i) => i),
       feathers: [], gear: [], streetBeaten: [], titleDefenses: 0, champion: false,
       foughtArenaToday: false, sparredToday: [],
+      outfit: { gloves: 'g-own', trunks: 't-own', hats: 'h-none', glasses: 'x-none' },
+      wardrobe: ['g-own', 't-own', 'h-none', 'x-none'],
     });
   }
 
@@ -90,6 +138,8 @@ export class Career {
       if (!c.sparredToday) c.sparredToday = [];
       if (!DIFFICULTY[c.difficulty]) c.difficulty = 'rookie';
       c.name = c.bird.name;
+      if (!c.outfit) c.outfit = { gloves: 'g-own', trunks: 't-own', hats: 'h-none', glasses: 'x-none' };
+      if (!c.wardrobe) c.wardrobe = ['g-own', 't-own', 'h-none', 'x-none'];
       return c;
     } catch (e) { return null; }
   }
@@ -103,6 +153,17 @@ export class Career {
   get D() { return DIFFICULTY[this.difficulty] || DIFFICULTY.rookie; }
   get bird() { return MY_BIRDS.find((b) => b.id === this.birdId) || MY_BIRDS[0]; }
   get team() { return MY_BIRDS.filter((b) => b.id !== this.birdId); }
+
+  // Options for makeBird() from your equipped outfit.
+  look() {
+    const b = this.bird;
+    const g = findItem('gloves', this.outfit.gloves), t = findItem('trunks', this.outfit.trunks);
+    const h = findItem('hats', this.outfit.hats), x = findItem('glasses', this.outfit.glasses);
+    return {
+      species: b.species, glove: g.color ?? b.glove, trunks: t.trunks ?? b.trunks, trim: t.trim ?? b.trim,
+      hat: h.hat || null, hatColor: h.color, glasses: x.glasses || null,
+    };
+  }
 
   get avg() { const s = this.stats; return (s.power + s.speed + s.stamina + s.defense) / 4; }
 

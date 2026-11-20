@@ -62,6 +62,27 @@ export const SPECIES = {
     beak: 0xe2c9a0, beakType: 'hook', beakLen: 0.14, beakW: 0.09, crest: 'none', tail: { len: 0.8, w: 0.1, n: 4, color: 0x2a5aa0, tip: 0x1d3f7a }, legs: 0x8fa0c0, zygo: true, weight: '35 g', bars: true },
   gull: { label: 'Herring gull', body: 0xf5f5f3, belly: 0xf8f8f6, back: 0xa9b3bd, wing: 0xa9b3bd, flight: 0x222222, head: 0xf8f8f6, eye: 0xe8d070,
     beak: 0xf5c518, beakTip: 0xd8301a, beakType: 'heavy', beakLen: 0.26, beakW: 0.08, crest: 'none', tail: { len: 0.45, w: 0.2, n: 6, color: 0xf5f5f3, tip: 0xe8e8e6 }, legs: 0xf0b8a0, weight: '1 kg' },
+  penguin: { label: 'King penguin', body: 0x1f2328, belly: 0xf7f7f2, back: 0x2a3038, wing: 0x23272d, flight: 0x16191d, head: 0x15171a, cheek: 0xf59e0b, throat: 0xf8b84a, eye: 0x111111,
+    beak: 0x1b1b1b, beakTip: 0xf08a24, beakType: 'heavy', beakLen: 0.32, beakW: 0.07, crest: 'none', tail: { len: 0.2, w: 0.18, n: 4, color: 0x1f2328, tip: 0x15171a }, legs: 0x222222, weight: '13 kg' },
+  peacock: { label: 'Indian peafowl', body: 0x1e4fbf, belly: 0x1a3fa0, back: 0x2f7d4a, wing: 0xb8a77a, flight: 0x7a4a2a, head: 0x2457d6, face: 0xf5f5f5, eye: 0x111111,
+    beak: 0x9a8a7a, beakType: 'cone', beakLen: 0.2, beakW: 0.07, crest: 'spike', crestColor: 0x1e4fbf, crestTip: 0x3aa0e0,
+    tail: { len: 1.5, w: 0.2, n: 9, color: 0x2f7d4a, tip: 0x1e3a8a }, legs: 0x8a8a8a, weight: '5 kg' },
+  puffin: { label: 'Atlantic puffin', body: 0x16161a, belly: 0xf7f7f2, back: 0x111114, wing: 0x16161a, flight: 0x0d0d10, head: 0x16161a, face: 0xeceae4, eye: 0x111111, eyeRing: 0xd8302a,
+    beak: 0xf26a1b, beakTip: 0xd8302a, beakType: 'toucan', beakLen: 0.3, beakW: 0.15, crest: 'none', tail: { len: 0.25, w: 0.18, n: 4, color: 0x111114, tip: 0x0d0d10 }, legs: 0xf26a1b, weight: '450 g' },
+  kingfisher: { label: 'Common kingfisher', body: 0x1e88c8, belly: 0xe8762a, back: 0x26a6d9, wing: 0x1b7fb8, flight: 0x135a8a, head: 0x1e88c8, cheek: 0xe8762a, throat: 0xf8f4ec, eye: 0x111111,
+    beak: 0x1b1b1b, beakType: 'heavy', beakLen: 0.42, beakW: 0.07, crest: 'none', tail: { len: 0.3, w: 0.15, n: 4, color: 0x135a8a, tip: 0x0f4a72 }, legs: 0xe85a2a, weight: '40 g' },
+  woodpecker: { label: 'Red-headed woodpecker', body: 0xf3f1ec, belly: 0xf7f5f0, back: 0x14141a, wing: 0x14141a, flight: 0x111114, wingPatch: 0xf7f5f0, head: 0xc8102e, eye: 0x111111,
+    beak: 0x6b6b6b, beakType: 'cone', beakLen: 0.3, beakW: 0.07, crest: 'none', tail: { len: 0.5, w: 0.16, n: 5, color: 0x14141a, tip: 0x111114 }, legs: 0x5a5a5a, weight: '72 g' },
+  swan: { label: 'Mute swan', body: 0xf7f7f4, belly: 0xfafaf8, back: 0xf2f2ee, wing: 0xf4f4f0, flight: 0xe8e8e2, head: 0xf7f7f4, eye: 0x111111,
+    beak: 0xf27a1b, cere: 0x111111, beakType: 'heavy', beakLen: 0.34, beakW: 0.1, crest: 'none', tail: { len: 0.3, w: 0.2, n: 6, color: 0xf2f2ee, tip: 0xe8e8e2 }, legs: 0x2a2a2a, weight: '11 kg' },
+  goose: { label: 'Canada goose', body: 0x8a7560, belly: 0xd8d0c2, back: 0x6e5a46, wing: 0x7a6650, flight: 0x3a3028, head: 0x141414, cheek: 0xf5f5f2, eye: 0x111111,
+    beak: 0x141414, beakType: 'duck', beakLen: 0.28, beakW: 0.1, crest: 'none', tail: { len: 0.3, w: 0.2, n: 6, color: 0x141414, tip: 0xf5f5f2 }, legs: 0x1a1a1a, weight: '4 kg' },
+  hummingbird: { label: 'Ruby-throated hummingbird', body: 0x3fa35a, belly: 0xe8ece4, back: 0x2f8f4a, wing: 0x3a3f3a, flight: 0x2a2e2a, head: 0x3fa35a, throat: 0xd8102e, eye: 0x111111,
+    beak: 0x111111, beakType: 'cone', beakLen: 0.55, beakW: 0.03, crest: 'none', tail: { len: 0.3, w: 0.12, n: 5, color: 0x2a2e2a, tip: 0x111111 }, legs: 0x222222, weight: '3 g' },
+  canary: { label: 'Canary', body: 0xffdb2e, belly: 0xffe766, back: 0xf5cf1f, wing: 0xf2c81a, flight: 0xe0b010, head: 0xffde3a, eye: 0x111111,
+    beak: 0xf2c2b0, beakType: 'cone', beakLen: 0.16, beakW: 0.08, crest: 'none', tail: { len: 0.5, w: 0.14, n: 5, color: 0xf2c81a, tip: 0xe0b010 }, legs: 0xe8b8a8, weight: '20 g' },
+  blueMacaw: { label: 'Blue-and-gold macaw', body: 0x1f74d1, belly: 0xf5c518, back: 0x1a67c0, wing: 0x1a67c0, flight: 0x16449a, head: 0x2a9a4a, face: 0xf3efe6, throat: 0x1a1a1a, eye: 0xd8d0b0,
+    beak: 0x1a1a1a, beakType: 'hook', beakLen: 0.3, beakW: 0.17, crest: 'none', tail: { len: 1.1, w: 0.14, n: 5, color: 0x1f74d1, tip: 0x16449a }, legs: 0x5a5a5a, zygo: true, weight: '1.1 kg' },
   mallard: { label: 'Mallard', body: 0xa7a59f, belly: 0xb6b3ab, back: 0x6e6a60, wing: 0x8a8478, flight: 0x3a3a3a, wingPatch: 0x3a4ab0, head: 0x1d5a3a, throat: 0x6b3a26, eye: 0x111111,
     beak: 0xe8c43a, beakType: 'duck', beakLen: 0.24, beakW: 0.1, crest: 'none', tail: { len: 0.3, w: 0.2, n: 5, color: 0x222222, tip: 0xf0f0f0 }, legs: 0xf08a2a, weight: '1.1 kg' },
 };
@@ -414,6 +435,67 @@ function gloveGeo(P, side) {
   return merge(list);
 }
 
+// ---------------------------------------------------------------------------
+// Outfit accessories: hats and sunglasses (head-local, scaled to head size)
+// ---------------------------------------------------------------------------
+export const HAT_TYPES = ['headband', 'cap', 'beanie', 'cowboy', 'tophat', 'crown'];
+const HATS_COVER_CREST = ['cap', 'beanie', 'cowboy', 'tophat'];
+const accMat = (c, extra = {}) => mat(c, { roughness: 0.6, ...extra });
+
+function buildHat(type, color, R) {
+  const g = new THREE.Group();
+  const add = (geo, m, x = 0, y = 0, z = 0) => { const mesh = new THREE.Mesh(geo, m); mesh.position.set(x, y, z); mesh.castShadow = true; g.add(mesh); return mesh; };
+  const m = accMat(color);
+  if (type === 'headband') {
+    const t = add(new THREE.TorusGeometry(R * 1.0, 0.05, 8, 32), m, 0, R * 0.3, 0); t.rotation.x = Math.PI / 2;
+    for (const s of [-1, 1]) { const tail = add(new THREE.BoxGeometry(0.06, 0.26, 0.04), m, s * 0.06, R * 0.12, -R * 1.02); tail.rotation.z = s * 0.4; }
+  } else if (type === 'cap') {
+    const dome = add(new THREE.SphereGeometry(R * 1.05, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), m, 0, R * 0.18, 0); dome.scale.y = 0.8;
+    const brim = add(new THREE.CylinderGeometry(R * 0.62, R * 0.62, 0.035, 24), m, 0, R * 0.22, R * 0.78); brim.scale.z = 0.85; brim.rotation.x = 0.12;
+    add(new THREE.SphereGeometry(0.05, 8, 6), m, 0, R * 1.02, 0);
+  } else if (type === 'beanie') {
+    const dome = add(new THREE.SphereGeometry(R * 1.07, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), m, 0, R * 0.14, 0); dome.scale.y = 0.95;
+    const fold = add(new THREE.TorusGeometry(R * 1.04, 0.075, 8, 32), accMat(0xf5f5f5), 0, R * 0.2, 0); fold.rotation.x = Math.PI / 2;
+    add(new THREE.SphereGeometry(0.13, 10, 8), accMat(0xf5f5f5), 0, R * 1.18, 0);
+  } else if (type === 'cowboy') {
+    const brim = add(new THREE.CylinderGeometry(R * 1.65, R * 1.65, 0.04, 32), m, 0, R * 0.5, 0); brim.scale.z = 0.85;
+    add(new THREE.CylinderGeometry(R * 0.6, R * 0.75, R * 0.75, 20), m, 0, R * 0.88, 0);
+    add(new THREE.CylinderGeometry(R * 0.76, R * 0.76, 0.07, 20), accMat(0x3b2414), 0, R * 0.6, 0);
+  } else if (type === 'tophat') {
+    add(new THREE.CylinderGeometry(R * 1.15, R * 1.15, 0.04, 28), m, 0, R * 0.55, 0);
+    add(new THREE.CylinderGeometry(R * 0.7, R * 0.7, R * 1.2, 24), m, 0, R * 1.15, 0);
+    add(new THREE.CylinderGeometry(R * 0.71, R * 0.71, 0.08, 24), accMat(0xb91c1c), 0, R * 0.65, 0);
+  } else if (type === 'crown') {
+    const gold = mat(0xe8b84a, { metalness: 1, roughness: 0.25 });
+    add(new THREE.CylinderGeometry(R * 0.62, R * 0.62, 0.22, 24, 1, true), gold, 0, R * 0.95, 0).material.side = THREE.DoubleSide;
+    for (let i = 0; i < 6; i++) {
+      const a = i / 6 * Math.PI * 2;
+      add(new THREE.ConeGeometry(0.07, 0.22, 6), gold, Math.cos(a) * R * 0.6, R * 0.95 + 0.2, Math.sin(a) * R * 0.6);
+      add(new THREE.SphereGeometry(0.035, 8, 6), accMat(i % 2 ? 0xdc2626 : 0x2563eb, { roughness: 0.1 }), Math.cos(a) * R * 0.63, R * 0.95, Math.sin(a) * R * 0.63);
+    }
+  }
+  return g;
+}
+
+function buildGlasses(type, R) {
+  const g = new THREE.Group();
+  const gold = type === 'gold';
+  const lens = new THREE.MeshPhysicalMaterial({ color: gold ? 0xc9a227 : 0x111418, metalness: gold ? 1 : 0.4, roughness: 0.08, clearcoat: 1 });
+  const frame = mat(gold ? 0xe8b84a : 0x1a1a1a, { metalness: gold ? 1 : 0.3, roughness: 0.3 });
+  for (const s of [-1, 1]) {
+    const e = new THREE.Vector3(0.6 * s, 0.17, 0.62).normalize();
+    const c = e.clone().multiplyScalar(R * 1.02); c.z *= 1.06;
+    const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), e);
+    const l = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.025, 20), lens); l.position.copy(c); l.quaternion.copy(q); g.add(l);
+    const f = new THREE.Mesh(new THREE.TorusGeometry(0.112, 0.016, 6, 20), frame);
+    f.position.copy(c); f.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), e); g.add(f);
+  }
+  const bar = new THREE.TorusGeometry(R * 1.0, 0.014, 6, 24, 1.7);
+  bar.rotateX(Math.PI / 2); bar.rotateY(0.85 - Math.PI / 2);
+  const b = new THREE.Mesh(bar, frame); b.position.y = R * 0.2; b.scale.z = 1.06; g.add(b);
+  return g;
+}
+
 const geoCache = new Map();
 function cached(key, fn) { if (!geoCache.has(key)) geoCache.set(key, fn()); return geoCache.get(key); }
 
@@ -468,6 +550,11 @@ export function makeBird(opts = {}) {
   head.add(crestPivot);
   const cg = cached(key('crest'), () => crestGeo(P));
   if (cg) mesh(cg, M.feather, crestPivot);
+  if (o.hat) {
+    head.add(buildHat(o.hat, o.hatColor ?? 0xb91c1c, P.headR));
+    if (HATS_COVER_CREST.includes(o.hat)) crestPivot.visible = false;
+  }
+  if (o.glasses) head.add(buildGlasses(o.glasses, P.headR));
 
   const legs = [];
   const legG = cached(key('leg') + (o.gloves ? `|${o.trunks}|${o.trim}` : ''), () => legGeo(P, o.gloves));

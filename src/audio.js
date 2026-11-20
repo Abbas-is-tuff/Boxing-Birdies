@@ -101,6 +101,24 @@ export const sfx = {
     }
     this._crowd.gain.setTargetAtTime(level, c.currentTime, 0.3);
   },
+  honk() {
+    tone('square', 392, 392, 0.22, 0.09); tone('square', 494, 494, 0.22, 0.07);
+    tone('square', 392, 392, 0.3, 0.09, 0.3); tone('square', 494, 494, 0.3, 0.07, 0.3);
+  },
+  crash() { noiseHit(0.35, 'lowpass', 700, 0.9); tone('sawtooth', 120, 40, 0.3, 0.3); },
+  // Continuous engine note for the car you drive; level 0 stops it.
+  engine(level, speed = 0) {
+    const c = ac(); if (!c) return;
+    if (!this._eng) {
+      const o = c.createOscillator(); o.type = 'sawtooth';
+      const f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 500;
+      const gn = c.createGain(); gn.gain.value = 0;
+      o.connect(f).connect(gn).connect(master); o.start();
+      this._eng = { o, gn };
+    }
+    this._eng.o.frequency.setTargetAtTime(45 + Math.abs(speed) * 5, c.currentTime, 0.1);
+    this._eng.gn.gain.setTargetAtTime(level, c.currentTime, 0.15);
+  },
   coin() { tone('square', 988, 988, 0.07, 0.12); tone('square', 1319, 1319, 0.18, 0.12, 0.07); },
   good() { tone('triangle', 660, 990, 0.1, 0.18); },
   bad() { tone('sawtooth', 200, 110, 0.15, 0.12); },
